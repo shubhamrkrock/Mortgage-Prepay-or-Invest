@@ -153,15 +153,19 @@
     /* ─── Layout ────────────────────────────────────────────── */
     .app-header {
       display: flex; align-items: center; justify-content: space-between;
-      padding: 20px 28px;
+      /* Match horizontal edges of main-container (max-width 1600px + 32px inner padding) */
+      padding: 16px max(32px, calc((100% - 1600px) / 2 + 32px));
       border-bottom: 1px solid var(--border);
       background: var(--surface);
       position: sticky; top: 0; z-index: 100;
       backdrop-filter: blur(12px);
+      gap: 16px;
     }
     .app-header .brand {
       display: flex; align-items: center; gap: 10px;
       font-size: 1rem; font-weight: 700; letter-spacing: -0.01em;
+      flex-shrink: 0;   /* never squish the logo/title */
+      white-space: nowrap;
     }
     .brand-icon {
       width: 32px; height: 32px; border-radius: 8px;
@@ -178,7 +182,8 @@
 
     /* ─── Ribbon Controls ───────────────────────────────────── */
     .ribbon {
-      display: flex; align-items: center; gap: 20px; flex-shrink: 0;
+      display: flex; align-items: center; gap: 16px;
+      flex-shrink: 1; min-width: 0; /* allow ribbon to compress before wrapping */
     }
     .ribbon-group {
       display: flex; flex-direction: column; align-items: flex-start; gap: 3px;
@@ -214,19 +219,23 @@
       border-color: var(--accent-border); font-weight: 600;
     }
     @media (max-width: 860px) {
-      .ribbon { gap: 12px; }
+      .ribbon { gap: 10px; }
       .ribbon-select-wrap select { min-width: 130px; font-size: 0.72rem; }
       .ribbon-chip { padding: 3px 8px; font-size: 0.7rem; }
     }
-    @media (max-width: 560px) {
+    /* Wrap ribbon below brand at mid-sizes — prevents cropping */
+    @media (max-width: 700px) {
       .app-header { flex-wrap: wrap; gap: 8px; }
-      .ribbon { width: 100%; justify-content: flex-end; }
+      .ribbon { width: 100%; justify-content: flex-start; gap: 12px; }
+    }
+    @media (max-width: 480px) {
+      .ribbon-select-wrap select { min-width: 110px; }
     }
 
     .main-container {
-      max-width: 1140px;
+      max-width: 1600px;   /* fills 1280px–1440px laptops; breathing room on 1920px */
       margin: 0 auto;
-      padding: 32px 20px 60px;
+      padding: 32px 32px 60px;
     }
 
     .hero {
@@ -268,11 +277,12 @@
     /* ─── Two-panel grid ────────────────────────────────────── */
     .calc-grid {
       display: grid;
-      grid-template-columns: 380px 1fr;
+      /* Left col: fluid 30% of container, clamped 300px–450px; right col: takes rest, overflow-safe */
+      grid-template-columns: clamp(300px, 30%, 450px) minmax(0, 1fr);
       gap: 24px;
       align-items: start;
     }
-    @media (max-width: 860px) {
+    @media (max-width: 1040px) {
       .calc-grid { grid-template-columns: 1fr; }
     }
 
@@ -1249,7 +1259,7 @@
 
     /* ─── Responsive tweaks ─────────────────────────────────── */
     @media (max-width: 480px) {
-      .app-header { padding: 14px 16px; }
+      .app-header { padding: 12px 16px; }
       .main-container { padding: 16px 12px 48px; }
       .card { padding: 16px; }
       .hero { padding: 24px 8px 20px; }
