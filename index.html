@@ -223,13 +223,15 @@
       .ribbon-select-wrap select { min-width: 130px; font-size: 0.72rem; }
       .ribbon-chip { padding: 3px 8px; font-size: 0.7rem; }
     }
-    /* Wrap ribbon below brand at mid-sizes — prevents cropping */
+    /* Wrap ribbon below brand at mobile — padding matches main-container */
     @media (max-width: 700px) {
-      .app-header { flex-wrap: wrap; gap: 8px; }
-      .ribbon { width: 100%; justify-content: flex-start; gap: 12px; }
+      .app-header { flex-wrap: wrap; gap: 6px; padding: 12px 14px; }
+      /* Allow ribbon groups to wrap: Currency+Numbers on row 1, Theme on row 2 */
+      .ribbon { width: 100%; flex-wrap: wrap; justify-content: flex-start; gap: 6px 14px; }
     }
     @media (max-width: 480px) {
-      .ribbon-select-wrap select { min-width: 110px; }
+      .ribbon-select-wrap select { min-width: 0; width: auto; }
+      .ribbon-chip { padding: 3px 7px; font-size: 0.68rem; }
     }
 
     .main-container {
@@ -1063,6 +1065,37 @@
       margin-top: 16px;
     }
     @media (max-width: 900px) { .qual-grid-v2 { grid-template-columns: 1fr; } }
+    /* Mobile: colour-code cells by strategy using nth-child
+       qgv2-primary: 3 headers + 4×(cat+3 cells) — prepay=4n+1, invest=4n+2, hybrid=4n+3
+       qgv2-context: 4×(cat+3 cells) no headers — prepay=4n+2, invest=4n+3, hybrid=4n
+    */
+    @media (max-width: 900px) {
+      .qgv2-primary > .qv2-cell:nth-child(4n+1) {
+        border-left: 4px solid var(--prepay-color); background: rgba(245,158,11,0.07);
+      }
+      .qgv2-primary > .qv2-cell:nth-child(4n+2) {
+        border-left: 4px solid var(--invest-color); background: rgba(56,189,248,0.07);
+      }
+      .qgv2-primary > .qv2-cell:nth-child(4n+3) {
+        border-left: 4px solid var(--hybrid-color); background: rgba(168,85,247,0.07);
+      }
+      .qgv2-context > .qv2-cell:nth-child(4n+2) {
+        border-left: 4px solid var(--prepay-color); background: rgba(245,158,11,0.07);
+      }
+      .qgv2-context > .qv2-cell:nth-child(4n+3) {
+        border-left: 4px solid var(--invest-color); background: rgba(56,189,248,0.07);
+      }
+      .qgv2-context > .qv2-cell:nth-child(4n) {
+        border-left: 4px solid var(--hybrid-color); background: rgba(168,85,247,0.07);
+      }
+      /* Colour the strategy value text in qual-title per their cell's left border */
+      .qgv2-primary > .qv2-cell:nth-child(4n+1) .qual-title,
+      .qgv2-context > .qv2-cell:nth-child(4n+2) .qual-title { color: var(--prepay-color); }
+      .qgv2-primary > .qv2-cell:nth-child(4n+2) .qual-title,
+      .qgv2-context > .qv2-cell:nth-child(4n+3) .qual-title { color: var(--invest-color); }
+      .qgv2-primary > .qv2-cell:nth-child(4n+3) .qual-title,
+      .qgv2-context > .qv2-cell:nth-child(4n)   .qual-title { color: var(--hybrid-color); }
+    }
     .qv2-head {
       background: var(--surface2);
       border: 1px solid var(--border);
@@ -2241,7 +2274,7 @@
     <h2>🧠 Beyond the Numbers</h2>
     <p>Financial, psychological & situational implications — ranked by impact/severity.</p>
   </div>
-  <div class="qual-grid-v2">
+  <div class="qual-grid-v2 qgv2-primary">
 
     <!-- ── Strategy headers ──────────────────────────────── -->
     <div class="qv2-head prepay-top">
@@ -2356,7 +2389,7 @@
   </div><!-- /qual-grid-v2 -->
 
   <!-- ── Context: Best / Worst when — same grid layout ──── -->
-  <div class="qual-grid-v2" style="margin-top:0; padding-top:0;">
+  <div class="qual-grid-v2 qgv2-context" style="margin-top:0; padding-top:0;">
 
     <!-- ── ✅ Best when ─────────────────────────────────── -->
     <div class="qv2-cat first">
