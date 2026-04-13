@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="description" content="Compare three mortgage strategies — Prepay, Invest, and Hybrid — with post-tax, inflation-adjusted net worth projections and a sensitivity matrix." />
   <title>Mortgage Strategy Simulator | Prepay · Invest · Hybrid</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
@@ -157,7 +157,7 @@
       padding: 16px max(32px, calc((100% - 1600px) / 2 + 32px));
       border-bottom: 1px solid var(--border);
       background: var(--surface);
-      position: sticky; top: 0; z-index: 100;
+      position: sticky; top: 0; z-index: 195;  /* above FAB (190), below mob-nav (200) */
       backdrop-filter: blur(12px);
       gap: 16px;
     }
@@ -1375,12 +1375,14 @@
     /* On mobile: sit above the bottom nav bar */
     @media (max-width: 860px) {
       .expand-fab {
+        /* Standard horizontal centering — right:50%+translateX(50%) is non-standard */
+        right: auto;
+        left: 50%;
         bottom: calc(60px + env(safe-area-inset-bottom, 0px) + 12px);
-        right: 50%;
-        transform: translateX(50%) translateY(8px);
+        transform: translateX(-50%) translateY(8px);
       }
       .expand-fab.fab-visible {
-        transform: translateX(50%) translateY(0);
+        transform: translateX(-50%) translateY(0);
       }
     }
 
@@ -1395,6 +1397,44 @@
       .main-container { padding: 16px 12px 48px; }
       .card { padding: 16px; }
       .hero { padding: 24px 8px 20px; }
+    }
+
+    /* ─── Mobile table density: amortization ────────────────── */
+    /* Amort table: 8 fixed columns — scale everything down on mobile */
+    @media (max-width: 640px) {
+      .amort-table {
+        font-size: 0.58rem;   /* was 0.74rem desktop */
+      }
+      .amort-table th {
+        font-size: 0.5rem;    /* was 0.61rem */
+        padding: 4px 4px;
+        letter-spacing: 0;
+        line-height: 1.25;
+      }
+      .amort-table td {
+        padding: 4px 4px;
+        font-size: 0.6rem;
+      }
+      .amort-th-sub { display: none; } /* formula row too dense at this size */
+      .amort-totals-row td {
+        font-size: 0.55rem;
+        padding: 5px 4px;
+      }
+      .amort-table col.col-label { width: 16%; }
+      .amort-table col.col-num   { width: 12%; }
+    }
+    @media (max-width: 400px) {
+      .amort-table { font-size: 0.52rem; }
+      .amort-table th { font-size: 0.45rem; padding: 3px 3px; }
+      .amort-table td { padding: 3px 3px; font-size: 0.54rem; }
+    }
+
+    /* ─── Mobile table density: breakdown ───────────────────── */
+    @media (max-width: 640px) {
+      .breakdown-table { font-size: 0.72rem; }   /* was 0.82rem */
+      .breakdown-table th { font-size: 0.6rem; padding: 6px 8px; }
+      .breakdown-table td { padding: 7px 8px; font-size: 0.72rem; }
+      .bkdn-sub-row td   { padding: 2px 8px 2px 20px; font-size: 0.63rem; }
     }
 
     /* ─── EMI display ──────────────────────────────────────── */
