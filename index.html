@@ -89,8 +89,13 @@
     [data-theme="light"] textarea {
       color-scheme: light;
     }
-    [data-theme="light"] ::-webkit-scrollbar-track { background: var(--bg); }
-    [data-theme="light"] ::-webkit-scrollbar-thumb { background: var(--surface2); border-radius: 4px; }
+    [data-theme="light"] ::-webkit-scrollbar-track { background: #e5e7eb; }
+    [data-theme="light"] ::-webkit-scrollbar-thumb { background: #9ca3af; border-radius: 4px; }
+    [data-theme="light"] ::-webkit-scrollbar-thumb:hover { background: #6b7280; }
+    /* Firefox: root viewport scrollbar */
+    [data-theme="light"] { scrollbar-color: #9ca3af #e5e7eb; }
+    /* Firefox: also override ALL scrollable children (e.g. quiz modal) in light mode */
+    [data-theme="light"] * { scrollbar-color: #9ca3af #e5e7eb; scrollbar-width: thin; }
 
     /* ─── Light theme: element-level contrast fixes ─────────── */
     /* Ribbon chip hover border */
@@ -608,8 +613,383 @@
       letter-spacing: -0.02em;
     }
     .decision-banner .db-reason {
-      font-size: 0.82rem; color: var(--text-muted);
-      margin-top: 4px;
+      font-size: 0.78rem; color: var(--text-muted);
+      margin-top: 4px; line-height: 1.5;
+    }
+    .db-reason-row2 {
+      font-size: 0.72rem; color: var(--text-muted); margin-top: 3px; opacity: 0.8;
+    }
+    /* Quiz trigger button inside Decision Banner */
+    .db-quiz-btn {
+      margin-left: auto; flex-shrink: 0;
+      display: inline-flex; flex-direction: column; align-items: center; gap: 2px;
+      padding: 8px 16px; border-radius: 20px;
+      font-size: 0.73rem; font-weight: 700; font-family: var(--font);
+      background: var(--accent-glow); color: var(--accent);
+      border: 1px solid var(--accent-border); cursor: pointer;
+      transition: var(--transition); white-space: nowrap;
+      touch-action: manipulation;
+    }
+    .db-quiz-btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .db-quiz-btn-label { display: flex; align-items: center; gap: 6px; }
+    .db-quiz-btn-hint  { font-size: 0.57rem; font-weight: 500; opacity: 0.7; letter-spacing: 0; text-transform: none; }
+    .db-quiz-ready-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--color-positive); flex-shrink: 0;
+      box-shadow: 0 0 0 2px rgba(74,222,128,0.3);
+      display: none;
+    }
+    .db-quiz-btn.has-data .db-quiz-ready-dot { display: inline-block; }
+    .db-quiz-btn.has-data .db-quiz-btn-hint  { display: none; }
+
+    /* ═══ Holistic Strategy Quiz Modal ════════════════════════ */
+    .quiz-overlay {
+      position: fixed; inset: 0; z-index: 500;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(4px);
+      display: flex; align-items: center; justify-content: center;
+      padding: 16px;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.2s;
+    }
+    .quiz-overlay.open { opacity: 1; pointer-events: auto; }
+    .quiz-modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: 0 24px 64px rgba(0,0,0,0.45);
+      width: 100%; max-width: 540px;
+      max-height: 90vh; overflow-y: auto;
+      display: flex; flex-direction: column;
+      transform: translateY(16px);
+      transition: transform 0.2s;
+    }
+    .quiz-overlay.open .quiz-modal { transform: translateY(0); }
+    .quiz-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 20px 24px 14px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .quiz-header-title {
+      font-size: 0.75rem; font-weight: 700;
+      letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted);
+    }
+    .quiz-close-btn {
+      background: none; border: none; cursor: pointer;
+      font-size: 1.1rem; color: var(--text-muted); padding: 2px 6px;
+      border-radius: 6px; transition: var(--transition);
+    }
+    .quiz-close-btn:hover { background: var(--surface2); color: var(--text); }
+    .quiz-progress-bar {
+      height: 3px; background: var(--border);
+      flex-shrink: 0;
+    }
+    .quiz-progress-fill {
+      height: 100%; background: var(--accent);
+      border-radius: 0 2px 2px 0;
+      transition: width 0.35s cubic-bezier(0.4,0,0.2,1);
+    }
+    .quiz-body { padding: 24px; flex: 1; }
+    .quiz-q-num {
+      font-size: 0.65rem; font-weight: 700; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--accent); margin-bottom: 8px;
+    }
+    .quiz-q-text {
+      font-size: 1.05rem; font-weight: 700; line-height: 1.4;
+      margin-bottom: 20px; color: var(--text);
+    }
+    .quiz-q-hint {
+      font-size: 0.75rem; color: var(--text-muted); margin-bottom: 16px;
+      margin-top: -12px; font-style: italic;
+    }
+    .quiz-answers { display: flex; flex-direction: column; gap: 10px; }
+    .quiz-answer-btn {
+      display: flex; align-items: flex-start; gap: 12px;
+      padding: 14px 16px; border-radius: var(--radius-sm);
+      background: var(--surface2); border: 1px solid var(--border);
+      cursor: pointer; font-family: var(--font); text-align: left;
+      transition: background 0.15s, border-color 0.15s, transform 0.1s;
+      touch-action: manipulation;
+    }
+    .quiz-answer-btn:hover { background: var(--accent-glow); border-color: var(--accent-border); transform: translateY(-1px); }
+    .quiz-answer-btn.selected { background: var(--accent-glow); border-color: var(--accent); }
+    [data-theme="light"] .quiz-answer-btn:hover   { background: rgba(79,70,229,0.1); border-color: rgba(79,70,229,0.5); }
+    [data-theme="light"] .quiz-answer-btn.selected { background: rgba(79,70,229,0.12); border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+    .quiz-answer-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 1px; }
+    .quiz-answer-text { font-size: 0.85rem; font-weight: 600; color: var(--text); line-height: 1.4; }
+    .quiz-answer-sub { font-size: 0.72rem; color: var(--text-muted); font-weight: 400; margin-top: 2px; }
+    .quiz-footer {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 24px;
+      border-top: 1px solid var(--border); flex-shrink: 0; gap: 12px;
+    }
+    .quiz-expand-btn {
+      font-size: 0.72rem; font-weight: 600; font-family: var(--font);
+      color: var(--accent); background: none; border: none; cursor: pointer;
+      padding: 0; opacity: 0.8; touch-action: manipulation;
+    }
+    .quiz-expand-btn:hover { opacity: 1; text-decoration: underline; }
+    .quiz-nav-btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+      padding: 9px 20px; border-radius: 20px;
+      font-size: 0.78rem; font-weight: 700; font-family: var(--font);
+      cursor: pointer; transition: var(--transition); touch-action: manipulation;
+    }
+    .quiz-nav-btn.primary { background: var(--accent); color: #fff; border: 1px solid var(--accent); }
+    .quiz-nav-btn.primary:hover { opacity: 0.88; }
+    .quiz-nav-btn.secondary { background: var(--surface2); color: var(--text-muted); border: 1px solid var(--border); }
+    .quiz-nav-btn.secondary:hover { color: var(--text); border-color: var(--accent-border); }
+    /* Result screen */
+    .quiz-result { padding: 24px; }
+    .quiz-persona-card {
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-bottom: 20px;
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      text-align: center;
+    }
+    .quiz-persona-icon { font-size: 3rem; margin-bottom: 10px; }
+    .quiz-persona-label {
+      font-size: 0.65rem; font-weight: 700; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px;
+    }
+    .quiz-persona-name {
+      font-size: 1.5rem; font-weight: 800; letter-spacing: -0.02em;
+      margin-bottom: 8px;
+    }
+    .quiz-persona-name.clr-prepay { color: var(--prepay-color); }
+    .quiz-persona-name.clr-invest { color: var(--invest-color); }
+    .quiz-persona-name.clr-hybrid { color: var(--hybrid-color); }
+    .quiz-persona-name.clr-open   { color: var(--accent); }
+    .quiz-persona-bio {
+      font-size: 0.82rem; color: var(--text-muted); line-height: 1.6;
+      max-width: 380px; margin: 0 auto;
+    }
+    .quiz-rec-title {
+      font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--text-muted); margin-bottom: 12px;
+    }
+    .quiz-rec-strategy {
+      display: flex; align-items: center; gap: 14px;
+      padding: 16px 18px; border-radius: var(--radius-sm);
+      border: 1.5px solid var(--border); background: var(--surface);
+      margin-bottom: 12px;
+    }
+    .quiz-rec-icon { font-size: 1.8rem; flex-shrink: 0; }
+    .quiz-rec-name { font-size: 1.1rem; font-weight: 800; }
+    .quiz-rec-reason { font-size: 0.78rem; color: var(--text-muted); margin-top: 3px; line-height: 1.5; }
+    .quiz-scores {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+      margin-bottom: 16px;
+    }
+    .quiz-score-item { text-align: center; padding: 10px 8px; border-radius: var(--radius-sm); background: var(--surface2); border: 1px solid var(--border); }
+    .quiz-score-label { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-muted); }
+    .quiz-score-bar-wrap { height: 5px; background: var(--border); border-radius: 3px; margin: 6px 0 4px; overflow: hidden; }
+    .quiz-score-bar { height: 100%; border-radius: 3px; transition: width 0.6s cubic-bezier(0.4,0,0.2,1); }
+    .quiz-score-val { font-size: 0.72rem; font-weight: 800; }
+    .quiz-disclaimer {
+      font-size: 0.68rem; color: var(--text-muted); line-height: 1.5;
+      padding: 10px 12px; background: var(--surface2);
+      border-radius: var(--radius-sm); border: 1px solid var(--border);
+      margin-bottom: 16px;
+    }
+    .quiz-result-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+    /* Verdict card */
+    .quiz-verdict-card {
+      border-radius: var(--radius); padding: 18px 20px; margin-bottom: 14px;
+      background: var(--surface); border: 1.5px solid var(--accent-border);
+      position: relative; overflow: hidden;
+    }
+    .quiz-verdict-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: var(--accent);
+    }
+    .quiz-verdict-strategy {
+      font-size: 1.65rem; font-weight: 800; letter-spacing: -0.02em;
+      line-height: 1.15; margin-bottom: 8px; margin-top: 6px;
+    }
+    .quiz-verdict-headline { font-size: 0.88rem; font-weight: 800; color: var(--text); line-height: 1.4; margin-bottom: 4px; }
+    .quiz-verdict-note     { font-size: 0.75rem; color: var(--text-muted); line-height: 1.5; }
+    .quiz-conf-tag {
+      display: inline-block; font-size: 0.58rem; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 3px 9px; border-radius: 20px; margin-bottom: 8px;
+    }
+    .conf-high   { background: rgba(74,222,128,0.15); color: var(--color-positive); border: 1px solid rgba(74,222,128,0.3); }
+    .conf-medium { background: rgba(245,158,11,0.12);  color: var(--accent3);         border: 1px solid rgba(245,158,11,0.25); }
+    .conf-low    { background: rgba(248,113,113,0.12); color: var(--color-negative);  border: 1px solid rgba(248,113,113,0.25); }
+    /* Signal strip */
+    .quiz-signal-strip {
+      display: flex; align-items: center; gap: 6px; padding: 12px 14px;
+      border-radius: var(--radius-sm); background: var(--surface2);
+      border: 1px solid var(--border); margin-bottom: 12px; overflow-x: auto;
+    }
+    .quiz-signal-chip {
+      flex: 1; min-width: 72px; text-align: center;
+      padding: 8px 8px; border-radius: var(--radius-sm);
+      background: var(--surface); border: 1px solid var(--border);
+    }
+    .quiz-signal-chip.final { border-color: var(--accent-border); background: var(--accent-glow); }
+    .quiz-signal-chip-label { font-size: 0.52rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px; }
+    .quiz-signal-chip-val   { font-size: 0.78rem; font-weight: 800; white-space: nowrap; }
+    .quiz-signal-chip-sub   { font-size: 0.6rem; color: var(--text-muted); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .quiz-signal-sep { font-size: 0.85rem; color: var(--text-muted); flex-shrink: 0; opacity: 0.5; }
+    .quiz-signal-agree  { color: var(--color-positive); font-weight: 700; opacity: 1; }
+    .quiz-signal-vs     { color: var(--accent3); font-weight: 700; opacity: 1; }
+    /* Insights row */
+    .quiz-insights-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+    @media (max-width: 480px) { .quiz-insights-row { grid-template-columns: 1fr; } }
+    .quiz-insight-box {
+      padding: 12px 14px; border-radius: var(--radius-sm);
+      background: var(--surface2); border: 1px solid var(--border);
+    }
+    .quiz-insight-label { font-size: 0.52rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; }
+    .quiz-insight-main  { font-size: 0.86rem; font-weight: 800; color: var(--text); margin-bottom: 4px; }
+    .quiz-insight-main.clr-warn { color: var(--accent3); }
+    .quiz-insight-main.clr-ok   { color: var(--color-positive); }
+    .quiz-insight-sub   { font-size: 0.64rem; color: var(--text-muted); line-height: 1.45; }
+    /* Action items */
+    .quiz-actions { margin-bottom: 12px; }
+    .quiz-actions-title { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; }
+    .quiz-action-item {
+      display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px;
+      border-radius: var(--radius-sm); background: var(--surface2);
+      border: 1px solid var(--border); margin-bottom: 6px;
+    }
+    .quiz-action-num {
+      flex-shrink: 0; width: 20px; height: 20px; border-radius: 50%;
+      background: var(--accent-glow); color: var(--accent);
+      border: 1px solid var(--accent-border);
+      font-size: 0.62rem; font-weight: 800;
+      display: flex; align-items: center; justify-content: center; margin-top: 1px;
+    }
+    .quiz-action-text { font-size: 0.78rem; font-weight: 600; color: var(--text); line-height: 1.4; }
+    /* Score bars label */
+    .quiz-scores-label { font-size: 0.58rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; }
+    /* No-calc box */
+    .quiz-no-calc {
+      font-size: 0.72rem; color: var(--text-muted); padding: 10px 14px;
+      background: var(--surface2); border: 1px dashed var(--border);
+      border-radius: var(--radius-sm); margin-bottom: 12px; text-align: center;
+    }
+    [data-theme="light"] .quiz-no-calc { border-color: rgba(0,0,0,0.25); }
+    /* Persona mini-card */
+    .quiz-persona-mini {
+      display: flex; align-items: flex-start; gap: 12px; padding: 12px 14px;
+      border-radius: var(--radius-sm); background: var(--surface2);
+      border: 1px solid var(--border); margin-bottom: 12px;
+    }
+    .quiz-persona-mini-icon  { font-size: 1.6rem; flex-shrink: 0; margin-top: 2px; }
+    .quiz-persona-mini-label { font-size: 0.52rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 2px; }
+    .quiz-persona-mini-name  { font-size: 0.9rem; font-weight: 800; margin-bottom: 3px; }
+    .quiz-persona-mini-bio   { font-size: 0.7rem; color: var(--text-muted); line-height: 1.5; }
+    /* Quiz data nudge + hint */
+    .quiz-data-nudge {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 10px 14px; border-radius: var(--radius-sm);
+      background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.2);
+      margin-bottom: 14px; font-size: 0.72rem; color: var(--accent3); line-height: 1.45;
+    }
+    .quiz-data-nudge.ready {
+      background: rgba(74,222,128,0.07); border-color: rgba(74,222,128,0.2);
+      color: var(--color-positive);
+    }
+    [data-theme="light"] .quiz-data-nudge        { background: rgba(245,158,11,0.13); border-color: rgba(245,158,11,0.35); }
+    [data-theme="light"] .quiz-data-nudge.ready  { background: rgba(22,101,52,0.08); border-color: rgba(22,101,52,0.3); color: #166534; }
+    .quiz-q-hint {
+      font-size: 0.65rem; color: var(--text-muted);
+      margin-bottom: 16px; margin-top: -12px;
+      font-style: italic; opacity: 0.7; line-height: 1.5;
+    }
+    /* ── Gate screen: inputs check before quiz ──────────────── */
+    .quiz-gate {
+      padding: 28px 24px 24px; display: flex; flex-direction: column;
+      align-items: center; text-align: center; gap: 0;
+    }
+    .quiz-gate-icon { font-size: 2.6rem; margin-bottom: 14px; }
+    .quiz-gate-title {
+      font-size: 1.05rem; font-weight: 800; color: var(--text);
+      letter-spacing: -0.01em; margin-bottom: 8px; line-height: 1.3;
+    }
+    .quiz-gate-sub {
+      font-size: 0.8rem; color: var(--text-muted); line-height: 1.6;
+      margin-bottom: 20px; max-width: 400px;
+    }
+    .quiz-gate-checklist {
+      width: 100%; max-width: 420px; margin-bottom: 22px;
+      display: flex; flex-direction: column; gap: 8px; text-align: left;
+    }
+    .quiz-gate-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 14px; border-radius: var(--radius-sm);
+      background: var(--surface2); border: 1px solid var(--border);
+      font-size: 0.8rem; font-weight: 600; color: var(--text);
+    }
+    .quiz-gate-item.done {
+      border-color: rgba(74,222,128,0.35);
+      background: rgba(74,222,128,0.07);
+    }
+    [data-theme="light"] .quiz-gate-item.done {
+      border-color: rgba(22,101,52,0.3);
+      background: rgba(22,101,52,0.07);
+    }
+    [data-theme="light"] .quiz-gate-item.done .gci-dot {
+      background: rgba(22,101,52,0.15); color: #166534;
+      border-color: rgba(22,101,52,0.4);
+    }
+    .quiz-gate-item .gci-dot {
+      width: 20px; height: 20px; border-radius: 50%; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.72rem; font-weight: 800;
+      /* amber warning — clearly visible in both themes */
+      background: rgba(245,158,11,0.18); color: var(--accent3);
+      border: 1.5px solid rgba(245,158,11,0.5);
+    }
+    .quiz-gate-item.done .gci-dot {
+      background: rgba(74,222,128,0.2); color: var(--color-positive);
+      border-color: rgba(74,222,128,0.5);
+    }
+    .quiz-gate-item .gci-val {
+      margin-left: auto; font-size: 0.72rem; font-weight: 700;
+      color: var(--accent); opacity: 0.85;
+    }
+    .quiz-gate-actions {
+      display: flex; flex-direction: column; align-items: center; gap: 10px;
+      width: 100%; max-width: 320px;
+    }
+    .quiz-gate-goto-btn {
+      width: 100%; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 11px 20px; border-radius: 20px;
+      font-size: 0.82rem; font-weight: 700; font-family: var(--font);
+      background: var(--accent); color: #fff; border: 1px solid var(--accent);
+      cursor: pointer; transition: var(--transition); touch-action: manipulation;
+    }
+    .quiz-gate-goto-btn:hover { opacity: 0.88; }
+    .quiz-gate-skip-btn {
+      font-size: 0.7rem; font-weight: 600; font-family: var(--font);
+      color: var(--text-muted); background: none; border: none; cursor: pointer;
+      padding: 4px 8px; opacity: 0.8; touch-action: manipulation;
+    }
+    .quiz-gate-skip-btn:hover { opacity: 1; color: var(--text); }
+    /* ── Section divider inside quiz ────────────────────────── */
+    .quiz-section-divider {
+      padding: 20px 24px 0;
+      border-top: 1px solid var(--border);
+    }
+    .quiz-section-label {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 0.6rem; font-weight: 700; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--text-muted);
+      background: var(--surface2); border: 1px solid var(--border);
+      padding: 4px 10px; border-radius: 20px; margin-bottom: 4px;
+    }
+    .quiz-section-title {
+      font-size: 0.78rem; font-weight: 700; color: var(--text); margin-bottom: 4px;
+    }
+    .quiz-section-desc {
+      font-size: 0.68rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 0;
     }
 
     /* ─── Chart ─────────────────────────────────────────────── */
@@ -1387,9 +1767,11 @@
     }
 
     /* ─── Scrollbar ─────────────────────────────────────────── */
-    ::-webkit-scrollbar { width: 6px; }
-    ::-webkit-scrollbar-track { background: var(--bg); }
-    ::-webkit-scrollbar-thumb { background: var(--surface2); border-radius: 4px; }
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: #2a2a3a; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb { background: #6366f1; border-radius: 4px; border: 2px solid #2a2a3a; }
+    ::-webkit-scrollbar-thumb:hover { background: #818cf8; }
+    * { scrollbar-width: thin; scrollbar-color: #6366f1 #2a2a3a; }
 
     /* ─── Responsive tweaks ─────────────────────────────────── */
     @media (max-width: 480px) {
@@ -1397,6 +1779,20 @@
       .main-container { padding: 16px 12px 48px; }
       .card { padding: 16px; }
       .hero { padding: 24px 8px 20px; }
+      /* ── Quiz modal mobile ── */
+      .quiz-overlay { padding: 8px; align-items: flex-end; }
+      .quiz-modal { max-height: 94vh; max-height: 94dvh; border-radius: var(--radius) var(--radius) 0 0; }
+      .quiz-header { padding: 14px 16px 10px; }
+      .quiz-body { padding: 16px; }
+      .quiz-footer { padding: 12px 16px; gap: 8px; }
+      .quiz-result { padding: 16px; }
+      .quiz-gate { padding: 20px 16px 16px; }
+      .quiz-gate-checklist { max-width: 100%; }
+      .quiz-gate-actions { max-width: 100%; }
+      .quiz-q-text { font-size: 0.95rem; }
+      .quiz-verdict-strategy { font-size: 1.35rem; }
+      .quiz-scores { gap: 6px; }
+      .quiz-signal-strip { gap: 4px; padding: 10px 10px; }
     }
 
     /* ─── Mobile table density: amortization ────────────────── */
@@ -2117,10 +2513,27 @@
       <!-- Decision Banner -->
       <div class="decision-banner anim anim-d2" id="decision-banner">
         <div class="db-icon" id="db-icon">🤔</div>
-        <div>
+        <div style="flex:1;min-width:0;">
           <div class="db-title">Recommended Strategy</div>
           <div class="db-strategy" id="db-strategy">—</div>
           <div class="db-reason" id="db-reason">Adjust your inputs to see a recommendation.</div>
+          <div class="db-reason-row2" id="db-reason2"></div>
+        </div>
+        <button class="db-quiz-btn" id="db-quiz-btn" onclick="openQuiz()">
+          <div class="db-quiz-btn-label"><span class="db-quiz-ready-dot"></span>🧭 Holistic Quiz</div>
+          <div class="db-quiz-btn-hint">enter inputs first</div>
+        </button>
+      </div>
+
+      <!-- Holistic Strategy Quiz Modal -->
+      <div class="quiz-overlay" id="quiz-overlay" role="dialog" aria-modal="true" aria-label="Holistic Strategy Quiz">
+        <div class="quiz-modal" id="quiz-modal">
+          <div class="quiz-header">
+            <div class="quiz-header-title">🧭 Find Your Strategy</div>
+            <button class="quiz-close-btn" onclick="closeQuiz()" aria-label="Close quiz">✕</button>
+          </div>
+          <div class="quiz-progress-bar"><div class="quiz-progress-fill" id="quiz-progress-fill"></div></div>
+          <div id="quiz-content"></div>
         </div>
       </div>
 
@@ -2907,7 +3320,7 @@
       Instagram
     </a>
   </div>
-  <div>Results are estimates for educational purposes. Past returns &ne; future performance. Consult a financial advisor. &nbsp;·&nbsp; <span style="opacity:0.55;">v2.1</span></div>
+  <div>Results are estimates for educational purposes. Past returns &ne; future performance. Consult a financial advisor. &nbsp;·&nbsp; <span style="opacity:0.55;">v2.2</span></div>
 </footer>
 
 <!-- ── Scripts ──────────────────────────────────────────────── -->
@@ -4931,19 +5344,41 @@ function renderResults(inputs, res) {
   // Decision banner
   const winnerName = ['Full Prepay', 'Full Invest', 'Hybrid'][winner];
   const winnerIcon = ['🏠', '📈', '⚖️'][winner];
-  const others     = nws.filter((_, i) => i !== winner);
-  const margin     = best - Math.max(...others);
   $('db-icon').textContent     = winnerIcon;
   $('db-strategy').textContent = winnerName;
+
+  // Rich reason: show all 3 NW values, both deltas, and rate/return context
   const ty = inputs.tenureY || Math.floor(inputs.totalMonths / 12);
   const tm = inputs.tenureM !== undefined ? inputs.tenureM : inputs.totalMonths % 12;
-  const tenureStr = (tm === 0) ? `${ty} years` : `${ty} years and ${tm} months`;
-  const reasons = [
-    `Your loan rate (${inputs.annualRate}%) beats real post-tax returns — guaranteed savings win.`,
-    `Compounding at ${inputs.cagr}% CAGR over ${tenureStr} outpaces the ${inputs.annualRate}% loan rate by ${fmtCcy(margin)}.`,
-    `A ${inputs.hybridPct}/${100-inputs.hybridPct} split earns ${fmtCcy(margin)} more than the next-best strategy.`
-  ];
-  $('db-reason').textContent = reasons[winner];
+  const tenureStr = (tm === 0) ? `${ty}y` : `${ty}y ${tm}m`;
+  const postTaxCagr = (inputs.cagr * (1 - inputs.taxRate / 100)).toFixed(1);
+  const [nwP, nwI, nwH] = nws;
+
+  let reason1, reason2;
+  if (winner === 0) {
+    // Prepay wins
+    const vsI = nwP - nwI, vsH = nwP - nwH;
+    reason1 = `+${fmtCcy(vsI)} vs Invest · +${fmtCcy(vsH)} vs Hybrid over ${tenureStr}.`;
+    reason2 = `Rate ${inputs.annualRate}% > post-tax CAGR ~${postTaxCagr}% — guaranteed return wins.`;
+  } else if (winner === 1) {
+    // Invest wins
+    const vsP = nwI - nwP, vsH = nwI - nwH;
+    reason1 = `+${fmtCcy(vsP)} vs Prepay · +${fmtCcy(vsH)} vs Hybrid over ${tenureStr}.`;
+    reason2 = `${inputs.cagr}% CAGR at ${inputs.taxRate}% tax → ~${postTaxCagr}% net, beats ${inputs.annualRate}% loan rate.`;
+  } else {
+    // Hybrid wins
+    const vsP = nwH - nwP, vsI = nwH - nwI;
+    const sign = (v) => v >= 0 ? '+' : '';
+    reason1 = `${sign(vsP)}${fmtCcy(vsP)} vs Prepay · ${sign(vsI)}${fmtCcy(vsI)} vs Invest over ${tenureStr}.`;
+    reason2 = `Rate (${inputs.annualRate}%) and net CAGR (~${postTaxCagr}%) are close — split captures both.`;
+  }
+  $('db-reason').textContent  = reason1;
+  const r2el = $('db-reason2');
+  if (r2el) r2el.textContent = reason2;
+
+  // Mark quiz button as data-ready
+  const qBtn = $('db-quiz-btn');
+  if (qBtn) qBtn.classList.add('has-data');
 
   // Helper: format comparison (absolute + %)
   const diffStr = (a, b) => {
@@ -5656,6 +6091,1000 @@ function collapseAllSections() {
     { threshold: 0.1 }
   );
   heads.forEach(h => obs.observe(h));
+})();
+
+/* ═══════════════════════════════════════════════════════════
+   HOLISTIC STRATEGY QUIZ
+   ═══════════════════════════════════════════════════════════ */
+(function() {
+
+const QUIZ_SECTIONS = [
+  {
+    id: 'core',
+    label: '🔑 Section 1 of 4',
+    title: 'Core Drivers',
+    desc: 'The 5 highest-impact questions — these alone determine ~70% of the recommendation.',
+    required: true,
+  },
+  {
+    id: 'behavioral',
+    label: '🧠 Section 2 of 4',
+    title: 'Behavioral & Psychological',
+    desc: 'How your habits and mindset affect the outcome. Skip if you\'re in a hurry.',
+    required: false,
+  },
+  {
+    id: 'situational',
+    label: '🏠 Section 3 of 4',
+    title: 'Life Situation',
+    desc: 'Family, career, and liquidity context. Adds nuance to the recommendation.',
+    required: false,
+  },
+  {
+    id: 'edge',
+    label: '⚡ Section 4 of 4',
+    title: 'Advanced Factors',
+    desc: 'Tax efficiency, opportunity cost, and market timing. For users who want the deepest analysis.',
+    required: false,
+  },
+];
+
+/* Questions ranked by severity/importance within each section.
+   s = scoring weights: p=Prepay, i=Invest, h=Hybrid */
+const QUIZ_Q = [
+  /* ══ SECTION 1: CORE DRIVERS (highest impact) ═══════════════
+     These 5 questions cover the BtN pillars that matter most:
+     financial trade-off, risk, emergency fund, income, and goals */
+  {
+    sec: 'core',
+    q: 'What matters most to you right now?',
+    hint: 'BtN → The defining strategic intent: Guaranteed risk-free return (Prepay) vs. Higher potential returns & compounding (Invest).',
+    a: [
+      { icon: '🏠', txt: 'Eliminate my debt as fast as possible',        sub: 'Certainty & security over maximising returns',  s: {p:4,i:0,h:1} },
+      { icon: '📈', txt: 'Build maximum long-term wealth',               sub: 'Compounding growth over certainty',              s: {p:0,i:4,h:1} },
+      { icon: '⚖️', txt: 'A sensible balance of both',                  sub: 'Pragmatic — neither extreme appeals',            s: {p:1,i:1,h:4} },
+    ]
+  },
+  {
+    sec: 'core',
+    q: 'Do you have 6+ months of living expenses saved as an emergency fund?',
+    hint: 'BtN → Invest is best when: "You already have a healthy emergency fund." Without it, market downturns combined with job shocks are catastrophic.',
+    a: [
+      { icon: '✅', txt: 'Yes — comfortably covered',                    sub: 'Strong safety net in place',                    s: {p:0,i:4,h:1} },
+      { icon: '📦', txt: 'Partially — about 2–3 months',                sub: 'Some cushion but not full',                     s: {p:1,i:1,h:4} },
+      { icon: '⚠️', txt: 'Not really — it would be a stretch',          sub: 'Buffer is thin right now',                      s: {p:4,i:0,h:0} },
+    ]
+  },
+  {
+    sec: 'core',
+    q: 'How stable and predictable is your monthly income?',
+    hint: 'BtN → Invest is worst when: "Job losses often occur during recessions when markets are also down — forcing distressed selling at the worst time."',
+    a: [
+      { icon: '🏦', txt: 'Very stable — salary, pension, or long-term contract', sub: 'Income unlikely to drop significantly',   s: {p:0,i:4,h:1} },
+      { icon: '📊', txt: 'Somewhat stable — might fluctuate',                   sub: 'Some variability expected',               s: {p:1,i:1,h:4} },
+      { icon: '🎲', txt: 'Uncertain — freelance, commission, or variable',      sub: 'Income is unpredictable month-to-month',  s: {p:4,i:0,h:1} },
+    ]
+  },
+  {
+    sec: 'core',
+    q: 'If your investments dropped 30% overnight, you would…',
+    hint: 'BtN → Psychological Cons of Invest: "Market volatility stress" and "Strategy depends on consistently investing every month — temptation to sell is a major failure point."',
+    a: [
+      { icon: '🏃', txt: 'Sell immediately — protect what I have',       sub: 'Capital preservation above all',                s: {p:4,i:0,h:1} },
+      { icon: '😰', txt: 'Worry, but hold and wait it out',              sub: 'Medium risk tolerance — I\'d stay the course', s: {p:1,i:1,h:4} },
+      { icon: '🛒', txt: 'Buy more — it\'s a discount',                  sub: 'High risk tolerance, conviction investor',      s: {p:0,i:4,h:1} },
+    ]
+  },
+  {
+    sec: 'core',
+    q: 'How do you feel about carrying your mortgage?',
+    hint: 'BtN → Prepay Psychological Pro #2: "Eliminating your largest monthly expense provides a constant reduction in financial anxiety."',
+    a: [
+      { icon: '😓', txt: 'It stresses me out — I want it gone',          sub: 'Debt causes real psychological pressure',       s: {p:4,i:0,h:1} },
+      { icon: '😌', txt: 'It\'s just a financial tool — I\'m fine with it', sub: 'Debt as leverage, not a burden',            s: {p:0,i:4,h:1} },
+      { icon: '🤷', txt: 'Neutral — manageable but I\'d rather be done', sub: 'Mild preference for being debt-free',           s: {p:1,i:1,h:4} },
+    ]
+  },
+
+  /* ══ SECTION 2: BEHAVIORAL & PSYCHOLOGICAL ═══════════════════
+     Covers BtN pillars: investment discipline, FOMO, decision fatigue,
+     opportunity cost mindset, hedonic adaptation */
+  {
+    sec: 'behavioral',
+    q: 'How confident are you that you\'d invest consistently — every single month, without fail?',
+    hint: 'BtN → Invest Psychological Con #2: "The temptation to spend freed cash instead of investing is the single biggest failure point of the Invest strategy."',
+    a: [
+      { icon: '✅', txt: 'Yes — standing order already set, never touched',  sub: 'Disciplined, automated investor',            s: {p:0,i:4,h:1} },
+      { icon: '🤔', txt: 'Mostly — but I might dip in sometimes',           sub: 'Partial discipline — hybrid automates less freedom', s: {p:1,i:1,h:4} },
+      { icon: '😅', txt: 'Honestly, probably not every month',              sub: 'Prepay removes the temptation entirely',      s: {p:4,i:0,h:1} },
+    ]
+  },
+  {
+    sec: 'behavioral',
+    q: 'During a prolonged market downturn (12–24 months of losses), would you…',
+    hint: 'BtN → Psychological Cons of Invest: "Market volatility stress" — a paid-off home removes foreclosure risk even if a job loss coincides with a market crash.',
+    a: [
+      { icon: '🧘', txt: 'Stay fully invested — I understand cycles',       sub: 'Long-term conviction, ignores short-term noise', s: {p:0,i:4,h:1} },
+      { icon: '⚖️', txt: 'Hold investments but pause new contributions',   sub: 'Cautious but not panic-selling',                s: {p:1,i:1,h:4} },
+      { icon: '🚨', txt: 'Seriously consider selling to reduce anxiety',    sub: 'Capital preservation instinct kicks in',        s: {p:4,i:0,h:1} },
+    ]
+  },
+  {
+    sec: 'behavioral',
+    q: 'If the stock market has a bull run while you\'re prepaying your mortgage, you\'d feel…',
+    hint: 'BtN → Prepay Psychological Con #1: "Investment FOMO — if the market has a bull run, watching others build wealth creates a persistent sense of regret."',
+    a: [
+      { icon: '😤', txt: 'Significant regret — I\'d watch and wish I\'d invested', sub: 'High FOMO sensitivity',               s: {p:0,i:4,h:2} },
+      { icon: '🤝', txt: 'Some FOMO, but content with my safe returns',    sub: 'Moderate — I\'d accept the trade-off',         s: {p:1,i:1,h:4} },
+      { icon: '🛡️', txt: 'At peace — the guaranteed return was worth it', sub: 'Low FOMO, security-first mindset',             s: {p:4,i:0,h:1} },
+    ]
+  },
+  {
+    sec: 'behavioral',
+    q: 'By prepaying instead of investing, you may leave significant wealth on the table if markets outperform your loan rate. How do you weigh that trade-off?',
+    hint: 'BtN → Prepay Financial Con #1 (biggest): "Opportunity cost — you may forgo much higher market returns, leaving significant wealth on the table long-term."',
+    a: [
+      { icon: '📈', txt: 'That opportunity cost is real — I\'d rather invest',    sub: 'Returns matter more than certainty',   s: {p:0,i:4,h:1} },
+      { icon: '⚖️', txt: 'I\'d split — capture some of both outcomes',           sub: 'Hedge the trade-off pragmatically',    s: {p:1,i:1,h:4} },
+      { icon: '🛡️', txt: 'Worth it completely — certainty beats potential gains', sub: 'Guaranteed return of debt elimination', s: {p:4,i:0,h:1} },
+    ]
+  },
+  {
+    sec: 'behavioral',
+    q: 'When you imagine being completely debt-free, the feeling is…',
+    hint: 'BtN → Prepay Psychological Pro #3: "Pays off mortgage is a major life milestone that delivers real freedom." Prepay Con: "Hedonic adaptation — the joy fades over time."',
+    a: [
+      { icon: '🏆', txt: 'Incredibly motivating — that\'s my #1 goal',    sub: 'Debt freedom is a powerful emotional driver',  s: {p:4,i:0,h:1} },
+      { icon: '😊', txt: 'Nice, but building wealth excites me equally',  sub: 'Both goals feel equally motivating',            s: {p:1,i:1,h:4} },
+      { icon: '🤷', txt: 'Neutral — I\'ll be debt-free eventually either way', sub: 'Timing of payoff is not emotionally significant', s: {p:0,i:4,h:1} },
+    ]
+  },
+
+  /* ══ SECTION 3: LIFE SITUATION ════════════════════════════════
+     Covers BtN pillars: time horizon, dependents, liquidity needs,
+     career risk, and single vs dual income */
+  {
+    sec: 'situational',
+    q: 'How many years until you\'d want to retire or access significant wealth?',
+    hint: 'BtN → Invest is best when: "You have a long investment horizon (15+ years)." Prepay is best when: "You are risk-averse or nearing retirement."',
+    a: [
+      { icon: '⏰', txt: 'Under 10 years',     sub: 'Short horizon — certainty and safety matter more',   s: {p:4,i:0,h:1} },
+      { icon: '📅', txt: '10–20 years',        sub: 'Medium horizon — both strategies viable',            s: {p:1,i:1,h:4} },
+      { icon: '🌱', txt: '20 or more years',   sub: 'Long horizon — compounding has time to dominate',    s: {p:0,i:4,h:1} },
+    ]
+  },
+  {
+    sec: 'situational',
+    q: 'Do you have dependents (children, elderly parents, single income) relying heavily on your income?',
+    hint: 'BtN → Prepay is best for: "Conservative savers or those with a single-income household." Invest is worst for: "High-debt households where EMI already strains cash flow."',
+    a: [
+      { icon: '🧑',    txt: 'No — just me, or me and a working partner',           sub: 'Lower financial obligations',           s: {p:0,i:4,h:1} },
+      { icon: '👨‍👦',   txt: 'Yes, some — partial dependency',                     sub: 'Some obligations in the mix',           s: {p:1,i:1,h:4} },
+      { icon: '👨‍👩‍👧‍👦',  txt: 'Yes — I\'m the sole/primary earner for a family', sub: 'High responsibility, lower risk capacity', s: {p:4,i:0,h:1} },
+    ]
+  },
+  {
+    sec: 'situational',
+    q: 'Extra mortgage payments lock your cash into illiquid home equity — you can\'t access it without selling or refinancing. How comfortable are you with that?',
+    hint: 'BtN → Prepay Financial Con #2: "Extra payments become illiquid home equity. Accessing funds in an emergency requires a new loan or selling your home."',
+    a: [
+      { icon: '😬', txt: 'Uncomfortable — I want my money accessible',        sub: 'Liquidity is important as a safety valve',  s: {p:0,i:4,h:1} },
+      { icon: '🤝', txt: 'Manageable — I\'d keep some liquid, commit some',   sub: 'Split maintains optionality',               s: {p:1,i:1,h:4} },
+      { icon: '🔒', txt: 'Completely fine — I don\'t need that cash back',    sub: 'Long-term lock-in suits my life stage',      s: {p:4,i:0,h:1} },
+    ]
+  },
+  {
+    sec: 'situational',
+    q: 'How is your career risk exposure right now?',
+    hint: 'BtN → Worst when investing: "You lack an emergency fund — market downturn + job loss is catastrophic." Career risk amplifies this.',
+    a: [
+      { icon: '🏛️', txt: 'Very low — tenured, government, or multi-year contract', sub: 'Job is practically bulletproof',       s: {p:0,i:4,h:1} },
+      { icon: '🏢', txt: 'Normal — private sector, fairly stable',                sub: 'Standard employment risk',              s: {p:1,i:1,h:4} },
+      { icon: '⚡', txt: 'High — startup, industry disruption, or active job search', sub: 'Job security is uncertain',         s: {p:4,i:0,h:0} },
+    ]
+  },
+  {
+    sec: 'situational',
+    q: 'Would the freed cash from prepayment (once the loan closes) immediately go into investments, or would you likely spend it?',
+    hint: 'BtN → Prepay Financial Pro: "When the loan closes, the full freed EMI + extra can be redirected to investments, creating a late-but-powerful compounding surge."',
+    a: [
+      { icon: '🔁', txt: 'Definitely invest it — I\'ve already planned this',    sub: 'Post-payoff reinvestment amplifies Prepay returns', s: {p:4,i:0,h:2} },
+      { icon: '🤔', txt: 'Probably, but I might upgrade lifestyle somewhat',     sub: 'Partial reinvestment, partial lifestyle',  s: {p:2,i:1,h:4} },
+      { icon: '🎉', txt: 'I\'d enjoy the lifestyle upgrade — that\'s the point', sub: 'Freedom to spend is the reward',      s: {p:1,i:2,h:3} },
+    ]
+  },
+
+  /* ══ SECTION 4: ADVANCED FACTORS ══════════════════════════════
+     Covers BtN pillars: tax efficiency, rate spread sensitivity,
+     asset diversification, prepayment penalties, and portfolio maturity */
+  {
+    sec: 'edge',
+    q: 'Do you have access to tax-advantaged investment accounts (PPF, ELSS, 401k, ISA, pension)?',
+    hint: 'BtN → Invest is best when: "Tax-advantaged accounts (PPF, ELSS, 401k) amplify post-tax returns significantly." Tax drag is already modelled in the calculator.',
+    a: [
+      { icon: '🎁', txt: 'Yes — and I\'m maxing out eligible contributions',      sub: 'Tax shield meaningfully boosts real returns',  s: {p:0,i:4,h:1} },
+      { icon: '📋', txt: 'Some — partially using them',                          sub: 'Partial tax advantage',                        s: {p:1,i:2,h:4} },
+      { icon: '❌', txt: 'No — all gains would be fully taxable',               sub: 'Higher tax drag reduces net investment returns', s: {p:3,i:0,h:2} },
+    ]
+  },
+  {
+    sec: 'edge',
+    q: 'Does your mortgage allow unlimited extra payments, or are there prepayment penalties?',
+    hint: 'BtN → Prepay Financial Con #3: "Some mortgage agreements include penalties for early payoff — always verify in your loan documents."',
+    a: [
+      { icon: '✅', txt: 'Yes — unlimited overpayments allowed, no penalties',  sub: 'Prepay is fully unrestricted',       s: {p:4,i:0,h:2} },
+      { icon: '📋', txt: 'Limited — there\'s a cap on annual overpayments',     sub: 'Partial prepayment viable within limits', s: {p:2,i:2,h:4} },
+      { icon: '🚫', txt: 'Penalties apply — extra payments are costly',         sub: 'Prepay economics are hurt by penalties', s: {p:0,i:4,h:1} },
+    ]
+  },
+  {
+    sec: 'edge',
+    q: 'Do you currently have any investment portfolio (stocks, funds, ETFs, pension) outside of property?',
+    hint: 'BtN → Invest Financial Pro #3: "Asset diversification — avoids concentrating all wealth in one illiquid asset (your home)." Having zero investments means full concentration in property.',
+    a: [
+      { icon: '📊', txt: 'Yes — well-diversified across asset classes',          sub: 'Portfolio already provides diversification',  s: {p:2,i:2,h:4} },
+      { icon: '🌱', txt: 'Small or just starting — below 3 years of expenses',  sub: 'Diversification still being built',            s: {p:1,i:4,h:1} },
+      { icon: '🏠', txt: 'No — my home is my only significant asset',          sub: 'All net worth is in illiquid property',        s: {p:0,i:4,h:1} },
+    ]
+  },
+  {
+    sec: 'edge',
+    q: 'Do you expect a significant income boost (promotion, business exit, inheritance) in the next 3–5 years?',
+    hint: 'If a large lump sum is expected soon, investing now and making a single large prepayment later may outperform either pure strategy.',
+    a: [
+      { icon: '🚀', txt: 'Yes — high probability, already in the pipeline',     sub: 'Lump-sum event could change the math significantly', s: {p:0,i:4,h:2} },
+      { icon: '🤞', txt: 'Possible — uncertain but plausible',                  sub: 'Hybrid preserves flexibility for the windfall',  s: {p:1,i:1,h:4} },
+      { icon: '📋', txt: 'No — income growth will be gradual and steady',       sub: 'No windfall expected; current plan is final',   s: {p:2,i:2,h:3} },
+    ]
+  },
+  {
+    sec: 'edge',
+    q: 'How sensitive is your decision to your investment return assumption? (The calculator shows your flip point — the CAGR where Invest overtakes Prepay in net worth.)',
+    hint: 'BtN → Rate spread sensitivity: the closer your assumed CAGR is to the flip point, the lower the confidence of either pure strategy.',
+    a: [
+      { icon: '📈', txt: 'I\'m very confident in my expected CAGR assumption',  sub: 'Historical data / personal experience backs it',  s: {p:0,i:4,h:1} },
+      { icon: '🤔', txt: 'Reasonably confident but I know it could vary ±2%',  sub: 'Normal uncertainty range',                       s: {p:1,i:2,h:4} },
+      { icon: '❓', txt: 'Unsure — I\'m not sure what return to expect at all', sub: 'High uncertainty favours the guaranteed return',  s: {p:4,i:0,h:2} },
+    ]
+  },
+];
+
+/* Mapping: section id → index range in QUIZ_Q */
+function getSectionRange(secId) {
+  const start = QUIZ_Q.findIndex(q => q.sec === secId);
+  const end   = QUIZ_Q.lastIndexOf(QUIZ_Q.slice().reverse().find(q => q.sec === secId));
+  let count = 0, sStart = -1;
+  for (let i = 0; i < QUIZ_Q.length; i++) {
+    if (QUIZ_Q[i].sec === secId) { if (sStart === -1) sStart = i; count++; }
+  }
+  return { start: sStart, count };
+}
+
+const QUIZ_PERSONAS = {
+  p: {
+    icon: '🛡️', name: 'The Debt Slayer', cls: 'clr-prepay', strategy: 'Prepay',
+    bio: 'Security, certainty, and peace of mind drive you. The guaranteed return of eliminating debt is more compelling than uncertain investment gains. For you, being mortgage-free is a return that can\'t be measured purely in percentages — it\'s freedom.',
+    whyFit: 'Your risk profile, life stage, and values all point toward accelerating your mortgage payoff. Even if the math slightly favours investing, the psychological benefit of owning your home outright is a real financial advantage.'
+  },
+  i: {
+    icon: '📈', name: 'The Wealth Builder', cls: 'clr-invest', strategy: 'Full Invest',
+    bio: 'You see debt as leverage, not a burden. With high risk tolerance, income stability, and a long time horizon, you\'re positioned to let compounding work for you. Markets may be volatile, but you\'re in for the long game.',
+    whyFit: 'Your answers indicate you can absorb market volatility, maintain discipline, and benefit from the typically higher long-run returns of equity investment over mortgage interest savings.'
+  },
+  h: {
+    icon: '⚖️', name: 'The Balanced Strategist', cls: 'clr-hybrid', strategy: 'Hybrid',
+    bio: 'You\'re pragmatic. You want both security and growth without committing entirely to either extreme. Splitting your extra cash lets you steadily reduce debt while still compounding wealth — a thoughtful hedge for real life.',
+    whyFit: 'You value balance over optimisation. A hybrid approach means you never have all your eggs in one basket, and you maintain flexibility to adjust as circumstances change.'
+  },
+  open: {
+    icon: '🧩', name: 'The Open Mind', cls: 'clr-open', strategy: 'Genuinely balanced',
+    bio: 'Your scores were nearly equal across all strategies — which is actually rare, and means the financial numbers should your deciding factor. You\'re flexible enough to go either way.',
+    whyFit: 'Since your personal values don\'t strongly pull in one direction, lean on the calculator results above. The strategy with the best net outcome for your specific numbers is probably the right choice.'
+  }
+};
+
+let quizState = {};
+
+function qEl(id) { return document.getElementById(id); }
+
+/* ── Default input detection ──────────────────────────────── */
+function quizInputsReady() {
+  // Considers inputs "ready" when user has deviated from at least 2 of the 3 main defaults:
+  // loan=100000, rate=9, tenure=300m (25y), extra=100
+  const loan   = +document.getElementById('inp-loan').value;
+  const rate   = +document.getElementById('inp-rate').value;
+  const tenY   = +document.getElementById('inp-tenure-y').value;
+  const tenM   = +document.getElementById('inp-tenure-m').value;
+  const extra  = +document.getElementById('inp-extra').value;
+  const tenTotal = tenY * 12 + tenM;
+  let changed = 0;
+  if (loan   !== 100000) changed++;
+  if (rate   !== 9)      changed++;
+  if (tenTotal !== 300)  changed++;
+  if (extra  !== 100)    changed++;
+  return changed >= 2; // at least 2 inputs differ from defaults
+}
+
+function quizInputsSummary() {
+  const loan  = +document.getElementById('inp-loan').value;
+  const rate  = +document.getElementById('inp-rate').value;
+  const tenY  = +document.getElementById('inp-tenure-y').value;
+  const tenM  = +document.getElementById('inp-tenure-m').value;
+  const extra = +document.getElementById('inp-extra').value;
+  const cagr  = +document.getElementById('inp-cagr').value;
+  return { loan, rate, ten: `${tenY}y${tenM > 0 ? ' ' + tenM + 'm' : ''}`, extra, cagr };
+}
+
+/* ── Gate screen ───────────────────────────────────────────── */
+function renderQuizGate() {
+  const ready = quizInputsReady();
+  const s = quizInputsSummary();
+  const loanDef  = s.loan  === 100000;
+  const rateDef  = s.rate  === 9;
+  const tenDef   = s.ten   === '25y';
+  const extraDef = s.extra === 100;
+  const defaultCount = [loanDef, rateDef, tenDef, extraDef].filter(Boolean).length;
+  const customCount  = 4 - defaultCount;
+
+  const itemHtml = (done, icon, label, val) =>
+    `<div class="quiz-gate-item${done ? ' done' : ''}">
+      <div class="gci-dot">${done ? '✓' : '!'}</div>
+      <div>${icon} ${label}</div>
+      <div class="gci-val">${val}</div>
+    </div>`;
+
+  // Dynamic icon, title, subtitle based on how many inputs are still at defaults
+  let gateIcon, gateTitle, gateSub;
+  if (defaultCount === 0) {
+    gateIcon  = '✅';
+    gateTitle = 'All inputs confirmed — verdict will be fully personalised';
+    gateSub   = `Your loan (${fmtCcy(s.loan)} at ${s.rate}%, ${s.ten}) and extra cash (${fmtCcy(s.extra)}/mo) are all set. The quiz will combine these real numbers with your behavioral answers for the most accurate recommendation.`;
+  } else if (defaultCount === 1) {
+    gateIcon  = '🟡';
+    gateTitle = '1 input still looks like a default — worth double-checking';
+    gateSub   = `${customCount} of 4 inputs look customised. The highlighted item below may still be a placeholder. Update it for a sharper verdict, or continue if it genuinely reflects your situation.`;
+  } else if (defaultCount === 2) {
+    gateIcon  = '⚠️';
+    gateTitle = `${defaultCount} inputs still at defaults — your result may not reflect your real situation`;
+    gateSub   = `The highlighted inputs below look like they haven\'t been changed from the example values. The quiz will still run, but the recommendation will be partly guesswork without your real numbers.`;
+  } else {
+    gateIcon  = '🚫';
+    gateTitle = `${defaultCount} of 4 inputs are still at defaults — please enter your real numbers first`;
+    gateSub   = `The quiz is designed to combine your actual loan details with behavioral analysis. Right now most inputs are still at example/default values, so any verdict would be unanchored to your reality. Enter your numbers for a result you can act on.`;
+  }
+
+  let html = `<div class="quiz-gate">`;
+  html += `<div class="quiz-gate-icon">${gateIcon}</div>`;
+  html += `<div class="quiz-gate-title">${gateTitle}</div>`;
+  html += `<div class="quiz-gate-sub">${gateSub}</div>`;
+
+  html += `<div class="quiz-gate-checklist">`;
+  html += itemHtml(!loanDef,  '🏠', 'Outstanding Loan',    fmtCcy(s.loan));
+  html += itemHtml(!rateDef,  '📊', 'Annual Interest Rate', s.rate + '%');
+  html += itemHtml(!tenDef,   '📅', 'Loan Tenure',          s.ten);
+  html += itemHtml(!extraDef, '💸', 'Extra Cash / Month',   fmtCcy(s.extra));
+  html += `</div>`;
+
+  html += `<div class="quiz-gate-actions" style="padding-bottom:8px;">`;
+  if (!ready) {
+    html += `<button class="quiz-gate-goto-btn" onclick="quizGoToInputs()">← Go to inputs &amp; enter my numbers</button>`;
+  }
+  html += `<button class="quiz-nav-btn ${ready ? 'primary' : 'secondary'}" style="width:100%;" onclick="quizStartQ()">`;
+  html += ready ? 'Start quiz with my numbers →' : 'Continue anyway (values-only result)';
+  html += `</button>`;
+  html += `<button class="quiz-gate-skip-btn" onclick="closeQuiz()">✕ Cancel</button>`;
+  html += `</div>`;
+  html += `</div>`;
+
+  qEl('quiz-content').innerHTML = html;
+  qEl('quiz-progress-fill').style.width = '0%';
+}
+
+function quizGoToInputs() {
+  closeQuiz();
+  // Scroll to the loan inputs section
+  const el = document.getElementById('inp-loan');
+  if (el) {
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    setTimeout(() => el.focus(), 500);
+  }
+}
+
+function quizStartQ() {
+  quizState.started = true;
+  renderQuizSection('core'); // start with section intro for core
+}
+
+/* ── Section maps ─────────────────────────────────────────── */
+const SEC_ORDER = ['core', 'behavioral', 'situational', 'edge'];
+
+function secFirstIdx(secId) {
+  return QUIZ_Q.findIndex(q => q.sec === secId);
+}
+function secLastIdx(secId) {
+  let last = -1;
+  QUIZ_Q.forEach((q, i) => { if (q.sec === secId) last = i; });
+  return last;
+}
+function nextSec(secId) {
+  const idx = SEC_ORDER.indexOf(secId);
+  return idx < SEC_ORDER.length - 1 ? SEC_ORDER[idx + 1] : null;
+}
+function prevSec(secId) {
+  const idx = SEC_ORDER.indexOf(secId);
+  return idx > 0 ? SEC_ORDER[idx - 1] : null;
+}
+function secOfIdx(qIdx) {
+  return QUIZ_Q[qIdx] ? QUIZ_Q[qIdx].sec : null;
+}
+function secAnsweredCount(secId) {
+  let n = 0;
+  QUIZ_Q.forEach((q, i) => { if (q.sec === secId && quizState.answers[i] !== undefined) n++; });
+  return n;
+}
+function totalActiveQ() {
+  // Count questions in active sections
+  let cnt = 0;
+  SEC_ORDER.forEach(sid => {
+    if (quizState.activeSections.has(sid)) cnt += QUIZ_Q.filter(q => q.sec === sid).length;
+  });
+  return cnt;
+}
+function globalProgress() {
+  let answered = 0, total = 0;
+  SEC_ORDER.forEach(sid => {
+    if (quizState.activeSections.has(sid)) {
+      QUIZ_Q.forEach((q, i) => { if (q.sec === sid) { total++; if (quizState.answers[i] !== undefined) answered++; } });
+    }
+  });
+  return total > 0 ? Math.round((answered / total) * 100) : 0;
+}
+
+/* ── Section intro screen ──────────────────────────────────── */
+function renderQuizSection(secId) {
+  quizState.currentSec = secId;
+  const sec = QUIZ_SECTIONS.find(s => s.id === secId);
+  const qCount = QUIZ_Q.filter(q => q.sec === secId).length;
+  const answeredInSec = secAnsweredCount(secId);
+  const isOptional = !sec.required;
+  const pSec = prevSec(secId);
+
+  qEl('quiz-progress-fill').style.width = globalProgress() + '%';
+
+  let html = `<div class="quiz-section-divider" style="border:none;padding:24px 24px 28px;">`;
+  html += `<div class="quiz-section-label">${sec.label}${isOptional ? ' · Optional' : ' · Required'}</div>`;
+  html += `<div class="quiz-section-title" style="font-size:1.1rem;font-weight:800;margin-bottom:8px;margin-top:6px;">${sec.title}</div>`;
+  html += `<div class="quiz-section-desc" style="font-size:0.8rem;color:var(--text-muted);line-height:1.6;margin-bottom:20px;">${sec.desc}</div>`;
+
+  // Show what's answered already
+  if (answeredInSec > 0) {
+    html += `<div style="font-size:0.72rem;color:var(--color-positive);margin-bottom:12px;">✓ ${answeredInSec}/${qCount} questions answered in this section</div>`;
+  } else {
+    html += `<div style="font-size:0.72rem;color:var(--text-muted);margin-bottom:12px;">${qCount} question${qCount > 1 ? 's' : ''} in this section</div>`;
+  }
+
+  // Info about section importance
+  if (secId === 'core') {
+    html += `<div style="font-size:0.72rem;background:rgba(99,102,241,0.08);border:1px solid rgba(99,102,241,0.2);padding:10px 14px;border-radius:var(--radius-sm);color:var(--accent);margin-bottom:20px;line-height:1.5;"><strong>Start here.</strong> These 5 questions cover the highest-impact factors — your goal, safety net, income stability, risk tolerance, and emotional relationship with debt. They alone give a strong recommendation.</div>`;
+  } else if (isOptional) {
+    html += `<div style="font-size:0.72rem;background:var(--surface2);border:1px solid var(--border);padding:10px 14px;border-radius:var(--radius-sm);color:var(--text-muted);margin-bottom:20px;line-height:1.5;">Optional — you can skip this section and get your result, or complete it for a deeper, more personalised analysis.</div>`;
+  }
+
+  html += `<div class="quiz-gate-actions" style="gap:10px;padding-bottom:8px;">`;
+  html += `<button class="quiz-nav-btn primary" style="width:100%;max-width:320px;" onclick="renderQuizQ(${secFirstIdx(secId)})">`;
+  html += answeredInSec > 0 ? `Continue section →` : `Start section →`;
+  html += `</button>`;
+  if (isOptional) {
+    html += `<button class="quiz-nav-btn secondary" style="max-width:320px;width:100%;" onclick="quizSkipSection('${secId}')">Skip this section → get result</button>`;
+  }
+  if (pSec) {
+    html += `<button class="quiz-gate-skip-btn" onclick="renderQuizSection('${pSec}')">← Back to ${QUIZ_SECTIONS.find(s=>s.id===pSec).title}</button>`;
+  }
+  html += `</div>`;
+  html += `</div>`;
+
+  qEl('quiz-content').innerHTML = html;
+  qEl('quiz-modal').scrollTop = 0;
+}
+
+function quizSkipSection(secId) {
+  // Jump straight to results
+  quizShowResult();
+}
+
+function openQuiz() {
+  quizState = {
+    answers: [],
+    current: 0,
+    activeSections: new Set(['core']),
+    currentSec: 'core',
+    started: false,
+    scores: { p: 0, i: 0, h: 0 }
+  };
+  const overlay = qEl('quiz-overlay');
+  overlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  renderQuizGate();
+  overlay.addEventListener('click', function closeOnBg(e) {
+    if (e.target === overlay) { closeQuiz(); overlay.removeEventListener('click', closeOnBg); }
+  });
+}
+
+function closeQuiz() {
+  qEl('quiz-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function totalQ() {
+  return QUIZ_Q.length;
+}
+
+function renderQuizQ(idx) {
+  quizState.current = idx;
+  const sec = QUIZ_SECTIONS.find(s => s.id === QUIZ_Q[idx].sec);
+  quizState.activeSections.add(sec.id);
+  const pct = Math.max(4, globalProgress());
+  qEl('quiz-progress-fill').style.width = pct + '%';
+
+  const q = QUIZ_Q[idx];
+  const secId = q.sec;
+  const secQuestions = QUIZ_Q.map((qq, i) => ({i, sec: qq.sec})).filter(x => x.sec === secId);
+  const secQNum = secQuestions.findIndex(x => x.i === idx) + 1;
+  const secQTotal = secQuestions.length;
+  const selected = quizState.answers[idx];
+  const isFirstInSec = idx === secFirstIdx(secId);
+  const isLastInSec  = idx === secLastIdx(secId);
+  const nSec = nextSec(secId);
+
+  let html = `<div class="quiz-body">`;
+
+  // Section mini-header
+  html += `<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">`;
+  html += `<span class="quiz-section-label" style="font-size:0.55rem;">${sec.label.split('·')[0].trim()} · Q${secQNum}/${secQTotal}</span>`;
+  html += `<span style="font-size:0.62rem;color:var(--text-muted);">${globalProgress()}% complete</span>`;
+  html += `</div>`;
+
+  html += `<div class="quiz-q-text">${q.q}</div>`;
+  if (q.hint) html += `<div class="quiz-q-hint">${q.hint}</div>`;
+  html += `<div class="quiz-answers">`;
+  q.a.forEach((ans, ai) => {
+    const sel = selected === ai ? ' selected' : '';
+    html += `<button class="quiz-answer-btn${sel}" onclick="quizSelectAnswer(${idx}, ${ai})">`;
+    html += `<div class="quiz-answer-icon">${ans.icon}</div>`;
+    html += `<div><div class="quiz-answer-text">${ans.txt}</div>`;
+    if (ans.sub) html += `<div class="quiz-answer-sub">${ans.sub}</div>`;
+    html += `</div></button>`;
+  });
+  html += `</div></div>`;
+
+  // Footer
+  html += `<div class="quiz-footer">`;
+  // Left: back nav
+  if (idx > secFirstIdx(secId)) {
+    html += `<button class="quiz-nav-btn secondary" onclick="quizNav(${idx - 1})">← Back</button>`;
+  } else if (pSec_forRender(secId)) {
+    html += `<button class="quiz-nav-btn secondary" onclick="renderQuizSection('${prevSec(secId)}')">← Back</button>`;
+  } else {
+    html += `<button class="quiz-nav-btn secondary" onclick="renderQuizGate()">← Back</button>`;
+  }
+
+  // Right: next nav
+  if (!isLastInSec) {
+    const disabledAttr = selected === undefined ? ' disabled style="opacity:0.4;cursor:not-allowed;"' : '';
+    html += `<button class="quiz-nav-btn primary"${disabledAttr} onclick="quizNav(${idx + 1})">Next →</button>`;
+  } else {
+    // End of section — offer next section or result
+    const hasAns = selected !== undefined;
+    const disabledAttr = !hasAns ? ' disabled style="opacity:0.4;cursor:not-allowed;"' : '';
+    if (nSec) {
+      html += `<div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;">`;
+      html += `<button class="quiz-nav-btn primary"${disabledAttr} onclick="renderQuizSection('${nSec}')">Next section →</button>`;
+      html += `<button class="quiz-expand-btn"${disabledAttr} onclick="quizShowResult()">Skip to result</button>`;
+      html += `</div>`;
+    } else {
+      html += `<button class="quiz-nav-btn primary"${disabledAttr} onclick="quizShowResult()">See my result →</button>`;
+    }
+  }
+  html += `</div>`;
+
+  qEl('quiz-content').innerHTML = html;
+}
+
+function pSec_forRender(secId) {
+  return prevSec(secId) !== null;
+}
+
+function quizSelectAnswer(qIdx, aIdx) {
+  quizState.answers[qIdx] = aIdx;
+  renderQuizQ(qIdx);
+}
+
+function quizNav(nextIdx) {
+  const cur = quizState.current;
+  const curSel = quizState.answers[cur];
+  if (nextIdx > cur && curSel === undefined) return;
+  quizState.current = nextIdx;
+  renderQuizQ(nextIdx);
+  qEl('quiz-modal').scrollTop = 0;
+}
+
+function quizExpandFull() {
+  quizState.activeSections.add('behavioral');
+  renderQuizSection('behavioral');
+}
+
+function quizComputeScores() {
+  const sc = { p: 0, i: 0, h: 0 };
+  QUIZ_Q.forEach((q, qi) => {
+    const aIdx = quizState.answers[qi];
+    if (aIdx === undefined) return;
+    const s = q.a[aIdx].s;
+    sc.p += s.p; sc.i += s.i; sc.h += s.h;
+  });
+  return sc;
+}
+
+/* ── Read live calculator result ──────────────────────────── */
+function getCalcContext() {
+  if (!lastRes || !lastInputs) return null;
+  const { prepay, invest, hybrid } = lastRes;
+  const inp  = lastInputs;
+  const nws  = [prepay.nw, invest.nw, hybrid.nw];
+  const keys = ['p', 'i', 'h'];
+  const names = ['Prepay', 'Invest', 'Hybrid'];
+  const icons = ['🏠', '📈', '⚖️'];
+  const best   = Math.max(...nws);
+  const sorted = [...nws].sort((a,b) => b-a);
+  const second = sorted[1];
+  const winIdx = nws.indexOf(best);
+  const margin = best - second;
+  const marginPct = best > 0 ? (margin / best * 100) : 0;
+  return {
+    mathKey: keys[winIdx],
+    mathName: names[winIdx],
+    mathIcon: icons[winIdx],
+    nws, margin, marginPct,
+    annualRate: inp.annualRate,
+    cagr: inp.cagr,
+    taxRate: inp.taxRate,
+    horizonMonths: inp.totalMonths,
+    loan: inp.loan,
+  };
+}
+
+/* ── Synthesis engine ─────────────────────────────────────── */
+function buildSynthesis(personaKey, ctx) {
+  if (!ctx) {
+    return {
+      verdict: '—', verdictCls: '',
+      tag: 'Run the calculator for a full verdict', tagCls: 'conf-medium',
+      headline: 'Enter your numbers to unlock a personalised decision.',
+      note: null,
+    };
+  }
+
+  const { mathKey, mathName, mathIcon, margin, marginPct } = ctx;
+  const bKey  = personaKey === 'open' ? mathKey : personaKey;
+  const bIcon = bKey === 'p' ? '🏠' : bKey === 'i' ? '📈' : '⚖️';
+  const bName = bKey === 'p' ? 'Prepay' : bKey === 'i' ? 'Invest' : 'Hybrid';
+  const mFmt  = fmtCcy(margin);
+  const mPct  = marginPct.toFixed(0);
+
+  // Quiz tie → pure math
+  if (personaKey === 'open') {
+    return {
+      verdict: mathIcon + ' ' + mathName,
+      verdictCls: 'clr-' + mathKey,
+      tag: marginPct > 15 ? 'Clear financial winner' : 'Numbers decide the tie',
+      tagCls: marginPct > 15 ? 'conf-high' : 'conf-medium',
+      headline: 'Your values are balanced — the numbers make the call.',
+      note: `${mathName} builds ${mFmt} more than any other strategy over your horizon.`,
+    };
+  }
+
+  // Behavioral and math agree
+  if (bKey === mathKey) {
+    if (marginPct > 15) {
+      return {
+        verdict: mathIcon + ' ' + mathName,
+        verdictCls: 'clr-' + mathKey,
+        tag: 'Strong confirmation',
+        tagCls: 'conf-high',
+        headline: 'Your gut and the numbers say the same thing.',
+        note: `${mathName} leads by ${mFmt} (${mPct}%) — a meaningful margin even if assumptions shift slightly.`,
+      };
+    }
+    if (marginPct > 5) {
+      return {
+        verdict: mathIcon + ' ' + mathName,
+        verdictCls: 'clr-' + mathKey,
+        tag: 'Values & numbers agree',
+        tagCls: 'conf-high',
+        headline: `${mathName} fits your life — and the calculator agrees.`,
+        note: `The financial edge is ${mFmt}. Both signals point the same direction.`,
+      };
+    }
+    // Tiny gap — values tiebreak
+    return {
+      verdict: bIcon + ' ' + bName,
+      verdictCls: 'clr-' + bKey,
+      tag: 'Values decide the tiebreak',
+      tagCls: 'conf-medium',
+      headline: `The math can't separate them — your values can.`,
+      note: `All three strategies within ${mFmt} of each other. That's inside market assumption noise.`,
+    };
+  }
+
+  // Behavioral ≠ math
+  if (marginPct < 5) {
+    return {
+      verdict: bIcon + ' ' + bName,
+      verdictCls: 'clr-' + bKey,
+      tag: 'Values win the tiebreak',
+      tagCls: 'conf-medium',
+      headline: 'Numbers are essentially neutral — go with how you want to live.',
+      note: `${mathName} has a ${mFmt} technical edge, well within realistic assumption noise.`,
+    };
+  }
+  if (marginPct < 20) {
+    return {
+      verdict: '⚖️ Hybrid',
+      verdictCls: 'clr-hybrid',
+      tag: 'Compromise maximises your options',
+      tagCls: 'conf-medium',
+      headline: 'Split the difference — Hybrid hedges both signals.',
+      note: `Instincts say ${bName}; math says ${mathName} (+${mFmt}). A split honours both.`,
+    };
+  }
+  // Strong conflict
+  return {
+    verdict: mathIcon + ' ' + mathName,
+    verdictCls: 'clr-' + mathKey,
+    tag: 'Numbers challenge your instinct',
+    tagCls: 'conf-low',
+    headline: 'The financial gap here is too large to ignore.',
+    note: `${mathName} beats ${bName} by ${mFmt} (${mPct}%). Verify your ${ctx.cagr}% CAGR assumption.`,
+  };
+}
+
+/* ── Flip-point calculator ─────────────────────────────────── */
+function computeFlipPoint() {
+  if (!lastInputs || !lastRes) return null;
+  const { extra, extraStepUpPct, extraEmisPerYear, emiHikePct, extraEmiMonth,
+          hybridPct, taxRate, totalMonths } = lastInputs;
+  const taxFrac = taxRate / 100;
+  const emi     = lastRes.emi;
+  const prepayM = lastRes.prepay.months;
+  const hybridM = lastRes.hybrid.months;
+
+  const diff = (cagr) => {
+    const r = Math.pow(1 + cagr / 100, 1/12) - 1;
+    const port = portfolioAtMonth(totalMonths, r, emi, extra, extraStepUpPct,
+                                  extraEmisPerYear, emiHikePct, extraEmiMonth,
+                                  hybridPct, prepayM, hybridM);
+    const nw = p => p.invested + Math.max(0, p.gross - p.invested) * (1 - taxFrac);
+    return nw(port.invest) - nw(port.prepay);
+  };
+
+  const d0 = diff(0), d50 = diff(50);
+  if (d0 > 0 && d50 > 0) return { type: 'invest_always' };
+  if (d0 < 0 && d50 < 0) return { type: 'prepay_always' };
+  let lo = 0, hi = 50;
+  for (let k = 0; k < 50; k++) {
+    const mid = (lo + hi) / 2;
+    if (diff(mid) > 0) hi = mid; else lo = mid;
+  }
+  return { type: 'flip', cagr: Math.round((lo + hi) / 2 * 10) / 10 };
+}
+
+/* ── Action items per verdict ──────────────────────────────── */
+const QUIZ_ACTIONS = {
+  p: [
+    'Automate your extra monthly payment — same day, every month, non-negotiable.',
+    'When the loan closes, immediately redirect the full freed cash (EMI + extra) into a diversified fund.',
+    'Review annually: if your loan rate drops significantly, reassess shifting to Hybrid.',
+  ],
+  i: [
+    'Set up a standing order today — same amount, same day, every month.',
+    'Maintain 6+ months of expenses in liquid savings before increasing investment amounts.',
+    'If markets drop 20%+, stay invested. Volatility is the price of long-run compounding.',
+  ],
+  h: [
+    'Lock your prepay/invest split in the calculator and automate both on the same day.',
+    `Resist the urge to tinker with the split unless life circumstances change significantly.`,
+    'When the loan closes, pivot 100% of the freed cash straight into investment.',
+  ],
+  open: [
+    `Pick the calculator's top strategy and automate it — indecision is the worst outcome.`,
+    'Start this week. Every delayed month costs compounding you can never recover.',
+    'Revisit if market return assumptions change ±2% or your loan rate shifts by ±1%.',
+  ],
+};
+
+function quizShowResult() {
+  // Require at least core section (all 5 questions answered)
+  const coreStart = secFirstIdx('core');
+  const coreLast  = secLastIdx('core');
+  for (let qi = coreStart; qi <= coreLast; qi++) {
+    if (quizState.answers[qi] === undefined) {
+      renderQuizSection('core');
+      return;
+    }
+  }
+
+  const sc = quizComputeScores();
+  const maxSc = Math.max(sc.p, sc.i, sc.h);
+  const tops = Object.keys(sc).filter(k => sc[k] === maxSc);
+  const winnerKey = tops.length > 1 ? 'open' : tops[0];
+  const persona = QUIZ_PERSONAS[winnerKey];
+
+  const totalPts = sc.p + sc.i + sc.h || 1;
+  const pctP = Math.round((sc.p / totalPts) * 100);
+  const pctI = Math.round((sc.i / totalPts) * 100);
+  const pctH = Math.round((sc.h / totalPts) * 100);
+
+  const ctx = getCalcContext();
+  const syn = buildSynthesis(winnerKey, ctx);
+
+  // Behavioral winner key (for 'open' fall back to math)
+  const bKey  = winnerKey === 'open' ? (ctx ? ctx.mathKey : 'h') : winnerKey;
+  const bIconS = bKey === 'p' ? '🏠' : bKey === 'i' ? '📈' : '⚖️';
+  const bNameS = bKey === 'p' ? 'Prepay' : bKey === 'i' ? 'Invest' : 'Hybrid';
+  const signalAgree = ctx && bKey === ctx.mathKey;
+
+  qEl('quiz-progress-fill').style.width = '100%';
+  let html = `<div class="quiz-result">`;
+
+  // ── 1. VERDICT CARD ───────────────────────────────────────
+  html += `<div class="quiz-verdict-card">`;
+  html += `<span class="quiz-conf-tag ${syn.tagCls}">${syn.tag}</span>`;
+  html += `<div class="quiz-verdict-strategy ${syn.verdictCls}">${syn.verdict}</div>`;
+  html += `<div class="quiz-verdict-headline">${syn.headline}</div>`;
+  if (syn.note) html += `<div class="quiz-verdict-note">${syn.note}</div>`;
+  html += `</div>`;
+
+  // ── 2. SIGNAL STRIP: Values → Math → Verdict ─────────────
+  html += `<div class="quiz-signal-strip">`;
+  html += `<div class="quiz-signal-chip">`;
+  html += `<div class="quiz-signal-chip-label">Your Values</div>`;
+  html += `<div class="quiz-signal-chip-val">${bIconS} ${bNameS}</div>`;
+  html += `<div class="quiz-signal-chip-sub">${pctP > pctI && pctP > pctH ? pctP : pctI > pctH ? pctI : pctH}% leaning</div>`;
+  html += `</div>`;
+  if (ctx) {
+    html += `<div class="quiz-signal-sep ${signalAgree ? 'quiz-signal-agree' : 'quiz-signal-vs'}">${signalAgree ? '✓' : 'vs'}</div>`;
+    html += `<div class="quiz-signal-chip">`;
+    html += `<div class="quiz-signal-chip-label">Calculator</div>`;
+    html += `<div class="quiz-signal-chip-val">${ctx.mathIcon} ${ctx.mathName}</div>`;
+    html += `<div class="quiz-signal-chip-sub">+${fmtCcy(ctx.margin)} lead</div>`;
+    html += `</div>`;
+  }
+  html += `<div class="quiz-signal-sep" style="opacity:0.4">→</div>`;
+  html += `<div class="quiz-signal-chip final">`;
+  html += `<div class="quiz-signal-chip-label">Verdict</div>`;
+  html += `<div class="quiz-signal-chip-val ${syn.verdictCls}">${syn.verdict}</div>`;
+  html += `<div class="quiz-signal-chip-sub">${signalAgree || !ctx ? 'aligned' : 'resolved'}</div>`;
+  html += `</div></div>`;
+
+  // ── 3. INSIGHT ROW: flip-point + loan timelines ───────────
+  if (ctx) {
+    const fp = computeFlipPoint();
+    let flipMain, flipSub, flipCls = '';
+    if (fp) {
+      if (fp.type === 'invest_always') {
+        flipMain = '✅ Invest leads at any CAGR';
+        flipSub  = `Even at 0% CAGR, Invest wins with your current loan rate and inputs.`;
+        flipCls  = 'clr-ok';
+      } else if (fp.type === 'prepay_always') {
+        flipMain = '✅ Prepay leads at any CAGR';
+        flipSub  = `Even at 50% CAGR, Prepay wins — loan rate dominates for your inputs.`;
+        flipCls  = 'clr-ok';
+      } else {
+        const gap = Math.abs(fp.cagr - ctx.cagr);
+        const sensitivity = gap < 1.5 ? '⚠️ very sensitive' : gap < 3 ? 'modest margin' : '✅ robust call';
+        flipMain = `Flip point: ${fp.cagr}% CAGR`;
+        flipSub  = ctx.cagr > fp.cagr
+          ? `Invest leads above ${fp.cagr}% — your assumption ${ctx.cagr}% clears it by ${gap.toFixed(1)}pp. ${sensitivity}.`
+          : `Prepay leads until ${fp.cagr}% — your assumption ${ctx.cagr}% is ${gap.toFixed(1)}pp below. ${sensitivity}.`;
+        flipCls  = gap < 1.5 ? 'clr-warn' : '';
+      }
+    }
+    const pM = lastRes.prepay.months;
+    const hM = lastRes.hybrid.months;
+    const iM = lastRes.invest.months;
+    html += `<div class="quiz-insights-row">`;
+    if (fp) {
+      html += `<div class="quiz-insight-box">`;
+      html += `<div class="quiz-insight-label">🎯 Assumption check</div>`;
+      html += `<div class="quiz-insight-main ${flipCls}">${flipMain}</div>`;
+      html += `<div class="quiz-insight-sub">${flipSub}</div>`;
+      html += `</div>`;
+    }
+    html += `<div class="quiz-insight-box">`;
+    html += `<div class="quiz-insight-label">🗓️ Debt-free in</div>`;
+    html += `<div class="quiz-insight-main">🏠 ${fmtMonths(pM)} · ⚖️ ${fmtMonths(hM)}</div>`;
+    html += `<div class="quiz-insight-sub">📈 ${fmtMonths(iM)} — loan runs full term, all cash goes to investing.</div>`;
+    html += `</div>`;
+    html += `</div>`;
+  } else {
+    html += `<div class="quiz-no-calc">📊 No calculator data — <strong>enter your loan details above</strong>, then retake for a numbers-backed verdict.</div>`;
+  }
+
+  // ── 4. ACTION ITEMS ───────────────────────────────────────
+  const actions = QUIZ_ACTIONS[['p','i','h'].includes(winnerKey) ? winnerKey : 'open'];
+  html += `<div class="quiz-actions">`;
+  html += `<div class="quiz-actions-title">What to do now</div>`;
+  actions.forEach((a, i) => {
+    html += `<div class="quiz-action-item"><div class="quiz-action-num">${i+1}</div>`;
+    html += `<div class="quiz-action-text">${a}</div></div>`;
+  });
+  html += `</div>`;
+
+  // ── 5. BEHAVIORAL PROFILE + SCORE BARS ───────────────────
+  html += `<div class="quiz-persona-mini">`;
+  html += `<div class="quiz-persona-mini-icon">${persona.icon}</div>`;
+  html += `<div><div class="quiz-persona-mini-label">Your personality type</div>`;
+  html += `<div class="quiz-persona-mini-name ${persona.cls}">${persona.name}</div>`;
+  html += `<div class="quiz-persona-mini-bio">${persona.bio}</div></div>`;
+  html += `</div>`;
+  html += `<div class="quiz-scores-label">Behavioral breakdown</div>`;
+  html += `<div class="quiz-scores">`;
+  html += scoreBar('Prepay', pctP, 'var(--prepay-color)');
+  html += scoreBar('Invest', pctI, 'var(--invest-color)');
+  html += scoreBar('Hybrid', pctH, 'var(--hybrid-color)');
+  html += `</div>`;
+
+  // ── 6. FOOTER ─────────────────────────────────────────────
+  html += `<div style="font-size:0.63rem;color:var(--text-muted);line-height:1.5;margin-bottom:14px;text-align:center;">Not financial advice. Revisit annually or when your inputs change materially.</div>`;
+  html += `<div class="quiz-result-actions">`;
+  html += `<button class="quiz-nav-btn secondary" onclick="quizRetake()">↺ Retake quiz</button>`;
+  html += `<button class="quiz-nav-btn primary" onclick="closeQuiz()">Done ✓</button>`;
+  html += `</div></div>`;
+
+  qEl('quiz-content').innerHTML = html;
+  qEl('quiz-modal').scrollTop = 0;
+
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      const bars = qEl('quiz-content').querySelectorAll('.quiz-score-bar');
+      if (bars[0]) bars[0].style.width = pctP + '%';
+      if (bars[1]) bars[1].style.width = pctI + '%';
+      if (bars[2]) bars[2].style.width = pctH + '%';
+    });
+  });
+}
+
+function scoreBar(label, pct, color) {
+  return `<div class="quiz-score-item">
+    <div class="quiz-score-label">${label}</div>
+    <div class="quiz-score-bar-wrap"><div class="quiz-score-bar" style="width:0%;background:${color};"></div></div>
+    <div class="quiz-score-val" style="color:${color}">${pct}%</div>
+  </div>`;
+}
+
+function quizRetake() {
+  openQuiz();
+}
+
+// Keyboard accessibility: close on Escape
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape' && qEl('quiz-overlay').classList.contains('open')) closeQuiz();
+});
+
+// Expose globally
+window.openQuiz = openQuiz;
+window.closeQuiz = closeQuiz;
+window.quizSelectAnswer = quizSelectAnswer;
+window.quizNav = quizNav;
+window.quizExpandFull = quizExpandFull;
+window.quizShowResult = quizShowResult;
+window.quizRetake = quizRetake;
+window.renderQuizQ = renderQuizQ;
+window.renderQuizSection = renderQuizSection;
+window.renderQuizGate = renderQuizGate;
+window.quizGoToInputs = quizGoToInputs;
+window.quizStartQ = quizStartQ;
+window.quizSkipSection = quizSkipSection;
+
 })();
 </script>
 </body>

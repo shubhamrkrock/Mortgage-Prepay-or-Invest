@@ -4,7 +4,7 @@
 
 > _While repaying a mortgage — should you Prepay, Invest, or do Both?_
 
-🔗 **[Live Demo →](https://shubhamrkrock.github.io/mortgage-strategy-simulator/)**
+🔗 **[Live Demo →](https://shubhamrkrock.github.io/Mortgage-Prepay-or-Invest/)**
 
 ---
 
@@ -192,8 +192,8 @@ Visit the live link above. No install, no sign-in.
 
 ### Option B — Run locally
 ```bash
-git clone https://github.com/shubhamrkrock/mortgage-strategy-simulator.git
-cd mortgage-strategy-simulator
+git clone https://github.com/shubhamrkrock/Mortgage-Prepay-or-Invest.git
+cd Mortgage-Prepay-or-Invest
 # Just open the file — no build step needed
 open index.html
 ```
@@ -273,6 +273,14 @@ Results are estimates for **educational purposes only**. Past market returns do 
 ---
 
 ## Changelog
+
+### v2.2 — 13 Apr 2026
+- **Holistic Strategy Quiz — full redesign** — 4 ranked sections (20 questions, 5 each), covering all 8 Beyond the Numbers pillars in order of impact: Core Drivers → Behavioral → Life Situation → Advanced Factors
+- **Input gate screen** — quiz now opens a gate that checks whether inputs are still at defaults; dynamic title, icon, and CTA change across 4 severity levels (0–4 defaults remaining); primary CTA swaps to "go back and enter numbers" when inputs are unset
+- **Scrollbar visibility** — all browsers (Chrome/Safari: 8px with explicit accent colours; Firefox: `scrollbar-color` applied to all scrollable children in both dark and light themes)
+- **Quiz mobile layout** — bottom-sheet style on ≤480px (aligns to bottom, rounded top corners, reduced padding, `94dvh` height)
+- **Light-theme quiz fixes** — warning dot, checklist item tints, data nudge backgrounds, dashed borders, and selected answer state all now WCAG AA–visible on white
+- **Button alignment** — `justify-content: center` added to all quiz nav buttons for consistent centering at full width
 
 ### v2.1 — 13 Apr 2026
 - **Expand All / Collapse All** — button bar above first results section; opens or closes all 8 sections simultaneously
