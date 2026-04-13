@@ -3434,8 +3434,8 @@ pairs.forEach(([slId, inpId, lvId, suffix]) => {
   const inp = $(inpId);
   const lv  = $(lvId);
   const sync = (from) => {
-    if (from === 'sl')  { inp.value = sl.value;  lv.textContent = liveVal(sl.value,  suffix); }
-    if (from === 'inp') { sl.value  = inp.value; lv.textContent = liveVal(inp.value, suffix); }
+    if (from === 'sl')  { inp.value = sl.value;  lv.textContent = liveVal(sl.value,  suffix); syncSliderFill(sl); }
+    if (from === 'inp') { sl.value  = inp.value; lv.textContent = liveVal(inp.value, suffix); syncSliderFill(sl); }
     updateAll();
   };
   sl.addEventListener('input',  () => sync('sl'));
@@ -4740,6 +4740,10 @@ function sensBuildMatrix(inputs, cagrSteps, colSteps, colKey) {
   const nwFn    = (p, tf) => p.invested + Math.max(0, p.gross - p.invested) * (1 - tf);
   const fmtDelta = d => {
     if (d <= 0) return '+0';
+    // Respect full/compact toggle
+    if (APP_STATE.format === 'full') {
+      return '+' + _fmtFull(d);
+    }
     const _cfg = CUR[APP_STATE.currency] || CUR.USD;
     for (const {t, s} of _cfg.u) {
       if (d >= t) {
@@ -5590,6 +5594,8 @@ function expandAllSections() {
     }
   });
   if (chartInst) setTimeout(() => chartInst.resize(), 10);
+  // Recalculate sticky header height after layout reflow
+  syncHeaderHeight();
 }
 function collapseAllSections() {
   ALL_SECTIONS.forEach(([wrapId, btnId, showL, hideL]) => {
@@ -5603,6 +5609,8 @@ function collapseAllSections() {
       if (lbl) lbl.textContent = showL;
     }
   });
+  // Recalculate sticky header height after layout reflow
+  syncHeaderHeight();
 }
 
 // ── Sticky strategy column headers for 🧠 Beyond the Numbers
