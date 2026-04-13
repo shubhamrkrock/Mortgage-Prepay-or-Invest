@@ -430,7 +430,7 @@
     button, .stepper button, .stepper-btn, .ribbon-chip, .chart-tab,
     .faq-q, .mob-nav-btn, input[type="range"], .amort-strategy-tab,
     .stream-tab, .faq-q, .card-section-header, .sec-info,
-    .expand-all-btn { touch-action: manipulation; }
+    .expand-fab-btn { touch-action: manipulation; }
     .stepper-btn {
       width: 26px; height: 26px;
       background: var(--surface2); border: 1px solid var(--border);
@@ -1073,7 +1073,7 @@
       /* NOT inside a grid — lives as a card sibling. Remove grid-column. */
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
+      gap: 8px 16px;   /* match qual-grid-v2 gap exactly */
       background: var(--bg);
       border-bottom: 1px solid var(--border);
       margin: 0;
@@ -1089,23 +1089,25 @@
     .qv2-sticky-bar.visible {
       height: auto;
       overflow: visible;
-      padding: 6px 0 6px;
+      padding: 8px 0;   /* breathing room above/below the card row */
       border-bottom-width: 1px;
       margin: 0 0 4px;
       opacity: 1;
       pointer-events: auto;
     }
+    /* Sticky pills are visually identical to .qv2-head */
     .qv2-sticky-pill {
-      display: flex; align-items: center; gap: 8px;
-      padding: 7px 14px;
-      border-radius: var(--radius-sm);
       background: var(--surface2);
       border: 1px solid var(--border);
-      font-size: 0.78rem; font-weight: 700;
+      border-radius: var(--radius-sm);
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
     }
-    .qv2-sticky-pill.prepay { border-top: 2px solid var(--prepay-color); }
-    .qv2-sticky-pill.invest { border-top: 2px solid var(--invest-color); }
-    .qv2-sticky-pill.hybrid { border-top: 2px solid var(--hybrid-color); }
+    .qv2-sticky-pill.prepay { border-top: 3px solid var(--prepay-color); }
+    .qv2-sticky-pill.invest { border-top: 3px solid var(--invest-color); }
+    .qv2-sticky-pill.hybrid { border-top: 3px solid var(--hybrid-color); }
     @media (max-width: 900px) { .qv2-sticky-bar { display: none !important; } }
     @media (max-width: 900px) { .qual-grid-v2 { grid-template-columns: 1fr; } }
     /* Mobile: colour-code cells by strategy using nth-child
@@ -1328,19 +1330,59 @@
     .fvc-card.fvc-h .fvc-card-value { color: var(--hybrid-color); }
     .fvc-note { font-size: 0.65rem; color: var(--text-muted); margin-top: 10px; text-align: center; }
 
-    /* ─── Expand All / Collapse All button ───────────────────────── */
-    .expand-all-bar {
-      display: flex; justify-content: flex-end; gap: 8px;
-      margin-bottom: 8px;
+    /* ─── Expand All / Collapse All — floating pill ──────────── */
+    .expand-fab {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 190;   /* below mob-nav (200) but above everything else */
+      display: flex;
+      align-items: center;
+      gap: 0;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+      overflow: hidden;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(8px);
+      transition: opacity 0.2s, transform 0.2s;
     }
-    .expand-all-btn {
+    .expand-fab.fab-visible {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0);
+    }
+    .expand-fab-btn {
       display: inline-flex; align-items: center; gap: 5px;
-      font-size: 0.72rem; font-weight: 600; font-family: var(--font);
-      padding: 5px 13px; border-radius: 8px; cursor: pointer;
-      background: var(--surface2); color: var(--text-muted);
-      border: 1px solid var(--border); transition: var(--transition);
+      padding: 8px 16px;
+      font-size: 0.72rem; font-weight: 700; font-family: var(--font);
+      color: var(--text-muted);
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background var(--transition), color var(--transition);
+      touch-action: manipulation;
     }
-    .expand-all-btn:hover { color: var(--text); border-color: var(--accent-border); background: var(--accent-glow); }
+    .expand-fab-btn:hover { background: var(--accent-glow); color: var(--accent); }
+    .expand-fab-divider {
+      width: 1px; height: 20px;
+      background: var(--border);
+      flex-shrink: 0;
+    }
+    /* On mobile: sit above the bottom nav bar */
+    @media (max-width: 860px) {
+      .expand-fab {
+        bottom: calc(60px + env(safe-area-inset-bottom, 0px) + 12px);
+        right: 50%;
+        transform: translateX(50%) translateY(8px);
+      }
+      .expand-fab.fab-visible {
+        transform: translateX(50%) translateY(0);
+      }
+    }
 
     /* ─── Scrollbar ─────────────────────────────────────────── */
     ::-webkit-scrollbar { width: 6px; }
@@ -1461,6 +1503,18 @@
       color: var(--text); font-weight: 400;
       letter-spacing: 0; text-transform: none; white-space: normal;
     }
+    /* Section info tooltip rows */
+    .tip-sec-body {
+      display: block; padding: 8px 10px 6px;
+      font-size: 0.7rem; line-height: 1.55; color: var(--text);
+    }
+    .tip-sec-row {
+      display: block; padding: 3px 10px;
+      font-size: 0.7rem; line-height: 1.55; color: var(--text);
+      border-top: 1px solid var(--border);
+    }
+    .tip-sec-row:last-child { padding-bottom: 8px; }
+    .tip-lbl { font-weight: 700; color: var(--accent); }
 
     /* ─── Chart collapse wrap — no inner border ─────────────── */
     #chart-collapse-wrap { border: none; border-radius: 0; margin-top: 4px; }
@@ -1559,11 +1613,6 @@
       .card-section-header .header-controls:empty {
         display: none;
       }
-    }
-    /* ─── Mobile: expand-all bar full-width ─────────────────────── */
-    @media (max-width: 640px) {
-      .expand-all-bar { justify-content: stretch; gap: 8px; }
-      .expand-all-btn { flex: 1; justify-content: center; }
     }
 
     .amort-strategy-tabs { display: flex; gap: 6px; margin: 14px 0 8px; }
@@ -2137,12 +2186,6 @@
         </div>
       </div><!-- /scenarios-grid -->
 
-      <!-- Expand All / Collapse All toolbar -->
-      <div class="expand-all-bar" style="margin-top:12px;">
-        <button class="expand-all-btn" onclick="expandAllSections()">&#9660; Expand all</button>
-        <button class="expand-all-btn" onclick="collapseAllSections()">&#9650; Collapse all</button>
-      </div>
-
       <!-- Chart -->
       <div class="card anim anim-d4" id="sec-charts">
         <div class="card-section-header" onclick="handleHeaderClick(event,'chart-collapse-wrap','chart-toggle-btn','','')">
@@ -2153,7 +2196,7 @@
             <button class="chart-tab" data-tab="composition" onclick="switchTab(this)">Composition</button>
             <button class="chart-tab" data-tab="interest" onclick="switchTab(this)">Interest Paid</button>
           </div>
-          <span class="sec-info info-tip" data-tip="Side-by-side chart of net worth, cashflows, and loan balance over time. Answers: which strategy pulls ahead — and when? Good for: visual learners comparing growth trajectories.">&#9432;</span>
+          <span class="sec-info info-tip info-tip--rich">&#9432;<span class="tip-popup"><span class="tip-sec-body">Side-by-side chart of net worth, cashflows, and loan balance over time.</span><span class="tip-sec-row"><span class="tip-lbl">Answers:</span> Which strategy pulls ahead &mdash; and when?</span><span class="tip-sec-row"><span class="tip-lbl">Good for:</span> Visual learners comparing growth trajectories.</span></span></span>
           <button class="amort-toggle open" id="chart-toggle-btn" onclick="toggleSection('chart-collapse-wrap','chart-toggle-btn','','')">
             <span></span>
             <span class="chevron">▼</span>
@@ -2172,7 +2215,7 @@
         <div class="card-section-header" onclick="handleHeaderClick(event,'fvcalc-collapse-wrap','fvcalc-toggle-btn','Show FV calculator','Hide FV calculator')">
           <div class="card-title">🎯 Interactive FV Calculator</div>
           <div class="header-controls"></div>
-          <span class="sec-info info-tip" data-tip="Explore how different CAGR assumptions change your investment portfolio's future value. Answers: what annual return do I need to beat prepaying? Good for: stress-testing return expectations before committing.">&#9432;</span>
+          <span class="sec-info info-tip info-tip--rich">&#9432;<span class="tip-popup"><span class="tip-sec-body">Explore how different CAGR assumptions change your investment portfolio&rsquo;s future value.</span><span class="tip-sec-row"><span class="tip-lbl">Answers:</span> What annual return do I need to beat prepaying?</span><span class="tip-sec-row"><span class="tip-lbl">Good for:</span> Stress-testing return expectations before committing.</span></span></span>
           <button class="amort-toggle" id="fvcalc-toggle-btn" onclick="toggleSection('fvcalc-collapse-wrap','fvcalc-toggle-btn','Show FV calculator','Hide FV calculator')">
             <span style="display:none">Show FV calculator</span>
             <span class="chevron">▼</span>
@@ -2188,7 +2231,7 @@
         <div class="card-section-header" onclick="handleHeaderClick(event,'breakdown-collapse-wrap','breakdown-toggle-btn','Show detailed breakdown','Hide detailed breakdown')">
           <div class="card-title">🔢 Detailed Breakdown</div>
           <div class="header-controls"></div>
-          <span class="sec-info info-tip" data-tip="Every key metric for all three strategies in one table — interest paid, net worth, IRR, loan duration. Answers: exactly how do the numbers compare? Good for: precision comparisons and sharing.">&#9432;</span>
+          <span class="sec-info info-tip info-tip--rich">&#9432;<span class="tip-popup"><span class="tip-sec-body">Every key metric for all three strategies in one table &mdash; interest paid, net worth, IRR, loan duration.</span><span class="tip-sec-row"><span class="tip-lbl">Answers:</span> Exactly how do the numbers compare?</span><span class="tip-sec-row"><span class="tip-lbl">Good for:</span> Precision comparisons and sharing with a financial advisor.</span></span></span>
           <button class="amort-toggle" id="breakdown-toggle-btn" onclick="toggleSection('breakdown-collapse-wrap','breakdown-toggle-btn','Show detailed breakdown','Hide detailed breakdown')">
             <span style="display:none">Show detailed breakdown</span>
             <span class="chevron">▼</span>
@@ -2218,7 +2261,7 @@
             <button class="amort-strategy-tab" data-stream="invest" onclick="switchStreamTab(this)">📈 Invest</button>
             <button class="amort-strategy-tab" data-stream="hybrid" onclick="switchStreamTab(this)">⚖️ Hybrid</button>
           </div>
-          <span class="sec-info info-tip" data-tip="Month-by-month view of EMI, prepayment, and investment contributions for one strategy at a time. Answers: where does every rupee go each month? Good for: budgeting and verifying your inputs.">&#9432;</span>
+          <span class="sec-info info-tip info-tip--rich">&#9432;<span class="tip-popup"><span class="tip-sec-body">Month-by-month view of EMI, prepayment, and investment contributions for one strategy at a time.</span><span class="tip-sec-row"><span class="tip-lbl">Answers:</span> Where does every rupee go each month?</span><span class="tip-sec-row"><span class="tip-lbl">Good for:</span> Budgeting and verifying your inputs are wired correctly.</span></span></span>
           <button class="amort-toggle" id="streams-toggle-btn" onclick="toggleSection('streams-collapse-wrap','streams-toggle-btn','Show cashflow streams','Hide cashflow streams')">
             <span style="display:none">Show cashflow streams</span>
             <span class="chevron">▼</span>
@@ -2234,7 +2277,7 @@
         <div class="card-section-header" onclick="handleHeaderClick(event,'yearend-collapse-wrap','yearend-toggle-btn','Show year-end snapshots','Hide year-end snapshots')">
           <div class="card-title">📅 Year-end Portfolio Snapshots</div>
           <div class="header-controls"></div>
-          <span class="sec-info info-tip" data-tip="Annual milestones — outstanding loan balance, investment value, and net worth at year end. Answers: where will I stand in year 5, 10, or 20? Good for: milestone planning and mid-course portfolio checks.">&#9432;</span>
+          <span class="sec-info info-tip info-tip--rich">&#9432;<span class="tip-popup"><span class="tip-sec-body">Annual milestones &mdash; outstanding loan balance, investment value, and net worth at each year end.</span><span class="tip-sec-row"><span class="tip-lbl">Answers:</span> Where will I stand in year 5, 10, or 20?</span><span class="tip-sec-row"><span class="tip-lbl">Good for:</span> Milestone planning and mid-course portfolio checks.</span></span></span>
           <button class="amort-toggle" id="yearend-toggle-btn" onclick="toggleSection('yearend-collapse-wrap','yearend-toggle-btn','Show year-end snapshots','Hide year-end snapshots')">
             <span style="display:none">Show year-end snapshots</span>
             <span class="chevron">▼</span>
@@ -2254,7 +2297,7 @@
             <button class="amort-strategy-tab" data-wfall="invest" onclick="switchWaterfallTab(this)">📈 Invest</button>
             <button class="amort-strategy-tab" data-wfall="hybrid" onclick="switchWaterfallTab(this)">⚖️ Hybrid</button>
           </div>
-          <span class="sec-info info-tip" data-tip="Breaks final net worth into its building blocks — interest saved, portfolio gains, equity unlocked. Answers: what actually drove my result? Good for: understanding the 'why' behind the winning strategy.">&#9432;</span>
+          <span class="sec-info info-tip info-tip--rich">&#9432;<span class="tip-popup"><span class="tip-sec-body">Breaks final net worth into its building blocks &mdash; interest saved, portfolio gains, equity unlocked.</span><span class="tip-sec-row"><span class="tip-lbl">Answers:</span> What actually drove my result?</span><span class="tip-sec-row"><span class="tip-lbl">Good for:</span> Understanding the &lsquo;why&rsquo; behind the winning strategy.</span></span></span>
           <button class="amort-toggle" id="waterfall-toggle-btn" onclick="toggleSection('waterfall-collapse-wrap','waterfall-toggle-btn','Show FV waterfall','Hide FV waterfall')">
             <span style="display:none">Show FV waterfall</span>
             <span class="chevron">▼</span>
@@ -2274,7 +2317,7 @@
             <button class="amort-strategy-tab" data-strat="invest" onclick="switchAmortStrategy(this)">📈 Invest</button>
             <button class="amort-strategy-tab" data-strat="hybrid" onclick="switchAmortStrategy(this)">⚖️ Hybrid</button>
           </div>
-          <span class="sec-info info-tip" data-tip="Month-by-month loan repayment table — EMI, interest, principal, and extra prepayments for each period. Answers: exactly what do I owe and when does the balance clear? Good for: cash flow planning and bank verification.">&#9432;</span>
+          <span class="sec-info info-tip info-tip--rich">&#9432;<span class="tip-popup"><span class="tip-sec-body">Month-by-month loan repayment table &mdash; EMI, interest, principal, and extra prepayments for each period.</span><span class="tip-sec-row"><span class="tip-lbl">Answers:</span> Exactly what do I owe and when does the balance clear?</span><span class="tip-sec-row"><span class="tip-lbl">Good for:</span> Cash flow planning and bank verification.</span></span></span>
           <button class="amort-toggle" id="amort-toggle-btn" onclick="toggleAmort()">
             <span style="display:none">Show amortization table</span>
             <span class="chevron">▼</span>
@@ -2338,7 +2381,7 @@
         <button class="amort-strategy-tab" data-dim="extra" onclick="switchSensitivityDim(this)">vs Extra Cash</button>
         <button class="amort-strategy-tab" data-dim="tax" onclick="switchSensitivityDim(this)">vs Tax Rate</button>
       </div>
-      <span class="sec-info info-tip" data-tip="Grid showing which strategy wins across a range of investment returns and loan rates. Answers: how fragile is my conclusion to the CAGR assumption? Good for: stress-testing before committing to a strategy.">&#9432;</span>
+      <span class="sec-info info-tip info-tip--rich">&#9432;<span class="tip-popup"><span class="tip-sec-body">Grid showing which strategy wins across a range of investment returns and loan rates.</span><span class="tip-sec-row"><span class="tip-lbl">Answers:</span> How fragile is my conclusion to the CAGR assumption?</span><span class="tip-sec-row"><span class="tip-lbl">Good for:</span> Stress-testing before committing to a strategy.</span></span></span>
       <button class="amort-toggle" id="sensitivity-toggle-btn" onclick="toggleSection('sensitivity-collapse-wrap','sensitivity-toggle-btn','Show sensitivity matrix','Hide sensitivity matrix')">
         <span style="display:none">Show sensitivity matrix</span>
         <span class="chevron">▼</span>
@@ -5451,6 +5494,28 @@ function handleAmortHeaderClick(e) {
   toggleAmort();
 }
 
+// ── Floating Expand All / Collapse All pill
+(function initExpandFab() {
+  const fab = document.createElement('div');
+  fab.className = 'expand-fab';
+  fab.id = 'expand-fab';
+  fab.innerHTML = `
+    <button class="expand-fab-btn" onclick="expandAllSections()" title="Expand all sections">▼ Expand all</button>
+    <div class="expand-fab-divider"></div>
+    <button class="expand-fab-btn" onclick="collapseAllSections()" title="Collapse all sections">▲ Collapse all</button>
+  `;
+  document.body.appendChild(fab);
+
+  // Show the FAB only when the results column is in the viewport
+  const resultsCol = document.getElementById('results-col');
+  if (!resultsCol) { fab.classList.add('fab-visible'); return; }
+  const obs = new IntersectionObserver(
+    entries => entries.forEach(e => fab.classList.toggle('fab-visible', e.isIntersecting)),
+    { threshold: 0.05 }
+  );
+  obs.observe(resultsCol);
+})();
+
 // ── Sync scroll-margin-top to actual header height (handles 1-row vs 2-row wrap)
 function syncHeaderHeight() {
   const h = document.querySelector('.app-header');
@@ -5511,9 +5576,18 @@ function collapseAllSections() {
   const bar = document.createElement('div');
   bar.className = 'qv2-sticky-bar';
   bar.innerHTML = `
-    <div class="qv2-sticky-pill prepay"><span>🏠</span> Full Prepay</div>
-    <div class="qv2-sticky-pill invest"><span>📈</span> Full Invest</div>
-    <div class="qv2-sticky-pill hybrid"><span>⚖️</span> Hybrid Split</div>
+    <div class="qv2-sticky-pill prepay">
+      <div class="scenario-icon prepay-bg" style="width:34px;height:34px;font-size:1rem;flex-shrink:0;">🏠</div>
+      <div><div class="qual-htitle">Full Prepay</div><div class="qual-hsub">Guaranteed return &middot; illiquid equity</div></div>
+    </div>
+    <div class="qv2-sticky-pill invest">
+      <div class="scenario-icon invest-bg" style="width:34px;height:34px;font-size:1rem;flex-shrink:0;">📈</div>
+      <div><div class="qual-htitle">Full Invest</div><div class="qual-hsub">Compounding growth &middot; market risk</div></div>
+    </div>
+    <div class="qv2-sticky-pill hybrid">
+      <div class="scenario-icon hybrid-bg" style="width:34px;height:34px;font-size:1rem;flex-shrink:0;">⚖️</div>
+      <div><div class="qual-htitle">Hybrid Split</div><div class="qual-hsub">Balanced upside &middot; tunable risk</div></div>
+    </div>
   `;
   grid.parentNode.insertBefore(bar, grid);
 
