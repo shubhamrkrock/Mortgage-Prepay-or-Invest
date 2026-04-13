@@ -1616,9 +1616,9 @@
       .mob-nav-btn.active { color: var(--accent); }
       .mob-nav-btn.active .mob-icon { filter: drop-shadow(0 0 4px var(--accent)); }
 
-      /* Scroll offset — land below sticky app header */
+      /* Scroll offset — land below sticky app header (updated dynamically by JS) */
       #inputs-panel, #results-col, #sec-charts, #sec-schedule, #sec-beyond {
-        scroll-margin-top: 62px;
+        scroll-margin-top: var(--header-h, 120px);
       }
 
       /* Hide hero pills — save vertical space on phone */
@@ -5307,6 +5307,16 @@ Chart.defaults.color = tickColor;
 
 updateChartDict();
 updateAll();
+
+// ── Sync scroll-margin-top to actual header height (handles 1-row vs 2-row wrap)
+function syncHeaderHeight() {
+  const h = document.querySelector('.app-header');
+  if (!h) return;
+  // Add 8px breathing room so section is never flush against the header
+  document.documentElement.style.setProperty('--header-h', (h.offsetHeight + 8) + 'px');
+}
+syncHeaderHeight();
+window.addEventListener('resize', syncHeaderHeight);
 </script>
 </body>
 </html>
