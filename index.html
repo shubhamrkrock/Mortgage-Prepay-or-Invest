@@ -429,7 +429,8 @@
     /* Prevent double-tap zoom on all interactive elements */
     button, .stepper button, .stepper-btn, .ribbon-chip, .chart-tab,
     .faq-q, .mob-nav-btn, input[type="range"], .amort-strategy-tab,
-    .stream-tab, .faq-q { touch-action: manipulation; }
+    .stream-tab, .faq-q, .card-section-header, .sec-info,
+    .expand-all-btn { touch-action: manipulation; }
     .stepper-btn {
       width: 26px; height: 26px;
       background: var(--surface2); border: 1px solid var(--border);
@@ -1064,6 +1065,48 @@
       gap: 8px 16px;
       margin-top: 16px;
     }
+    /* Sticky strategy column headers for Beyond the Numbers on desktop */
+    .qv2-sticky-bar {
+      position: sticky;
+      top: var(--header-h, 62px);
+      z-index: 50;
+      /* NOT inside a grid — lives as a card sibling. Remove grid-column. */
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      margin: 0;
+      /* Collapsed by default — takes zero layout space */
+      height: 0;
+      overflow: hidden;
+      padding: 0;
+      border-bottom-width: 0;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.18s;
+    }
+    .qv2-sticky-bar.visible {
+      height: auto;
+      overflow: visible;
+      padding: 6px 0 6px;
+      border-bottom-width: 1px;
+      margin: 0 0 4px;
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .qv2-sticky-pill {
+      display: flex; align-items: center; gap: 8px;
+      padding: 7px 14px;
+      border-radius: var(--radius-sm);
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      font-size: 0.78rem; font-weight: 700;
+    }
+    .qv2-sticky-pill.prepay { border-top: 2px solid var(--prepay-color); }
+    .qv2-sticky-pill.invest { border-top: 2px solid var(--invest-color); }
+    .qv2-sticky-pill.hybrid { border-top: 2px solid var(--hybrid-color); }
+    @media (max-width: 900px) { .qv2-sticky-bar { display: none !important; } }
     @media (max-width: 900px) { .qual-grid-v2 { grid-template-columns: 1fr; } }
     /* Mobile: colour-code cells by strategy using nth-child
        qgv2-primary: 3 headers + 4×(cat+3 cells) — prepay=4n+1, invest=4n+2, hybrid=4n+3
@@ -1285,6 +1328,20 @@
     .fvc-card.fvc-h .fvc-card-value { color: var(--hybrid-color); }
     .fvc-note { font-size: 0.65rem; color: var(--text-muted); margin-top: 10px; text-align: center; }
 
+    /* ─── Expand All / Collapse All button ───────────────────────── */
+    .expand-all-bar {
+      display: flex; justify-content: flex-end; gap: 8px;
+      margin-bottom: 8px;
+    }
+    .expand-all-btn {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 0.72rem; font-weight: 600; font-family: var(--font);
+      padding: 5px 13px; border-radius: 8px; cursor: pointer;
+      background: var(--surface2); color: var(--text-muted);
+      border: 1px solid var(--border); transition: var(--transition);
+    }
+    .expand-all-btn:hover { color: var(--text); border-color: var(--accent-border); background: var(--accent-glow); }
+
     /* ─── Scrollbar ─────────────────────────────────────────── */
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-track { background: var(--bg); }
@@ -1441,7 +1498,10 @@
       margin-bottom: 8px;
     }
     .card-section-header .card-title {
-      margin-bottom: 0; white-space: nowrap; flex-shrink: 0;
+      margin-bottom: 0;
+      /* Allow title to shrink + truncate on narrow viewports */
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      min-width: 0; flex-shrink: 1;
     }
     .card-section-header .card-title::after { display: none; }
     .header-controls {
@@ -1452,6 +1512,59 @@
     }
     .card-section-header .chart-tab { margin: 0; }
     .card-section-header .amort-strategy-tabs { margin: 0; }
+    /* Clickable headers */
+    .card-section-header[onclick] { cursor: pointer; user-select: none; }
+    .card-section-header[onclick]:hover .card-title { color: var(--accent); }
+    /* Section info badge ⓘ next to the toggle chevron */
+    .sec-info {
+      display: inline-flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      width: 22px; height: 22px; border-radius: 50%;
+      background: var(--surface2); border: 1px solid var(--border);
+      font-size: 0.72rem; font-weight: 700;
+      color: var(--text-muted);
+      cursor: help !important; user-select: none;
+      transition: var(--transition); line-height: 1; opacity: 0.7;
+    }
+    .sec-info:hover { background: var(--accent-glow); border-color: var(--accent); color: var(--accent); opacity: 1; }
+
+    /* ─── Mobile: section header wrapping ≤640px ────────────────── */
+    @media (max-width: 640px) {
+      /* Allow header to wrap across 2 rows:
+         Row 1: title (flex:1) + ⓘ badge + ▼ toggle
+         Row 2: tab pills full-width (only shown when present) */
+      .card-section-header {
+        flex-wrap: wrap;
+        align-items: center;
+      }
+      .card-section-header .card-title {
+        flex: 1;
+        order: 1;
+        min-width: 0;
+      }
+      .card-section-header .sec-info {
+        order: 2;
+        flex-shrink: 0;
+      }
+      .card-section-header .amort-toggle {
+        order: 3;
+        flex-shrink: 0;
+      }
+      .card-section-header .header-controls {
+        order: 4;
+        width: 100%;
+        /* Only show row 2 when it has content */
+        flex-wrap: wrap;
+      }
+      .card-section-header .header-controls:empty {
+        display: none;
+      }
+    }
+    /* ─── Mobile: expand-all bar full-width ─────────────────────── */
+    @media (max-width: 640px) {
+      .expand-all-bar { justify-content: stretch; gap: 8px; }
+      .expand-all-btn { flex: 1; justify-content: center; }
+    }
 
     .amort-strategy-tabs { display: flex; gap: 6px; margin: 14px 0 8px; }
     .amort-strategy-tab {
@@ -2024,9 +2137,15 @@
         </div>
       </div><!-- /scenarios-grid -->
 
+      <!-- Expand All / Collapse All toolbar -->
+      <div class="expand-all-bar" style="margin-top:12px;">
+        <button class="expand-all-btn" onclick="expandAllSections()">&#9660; Expand all</button>
+        <button class="expand-all-btn" onclick="collapseAllSections()">&#9650; Collapse all</button>
+      </div>
+
       <!-- Chart -->
       <div class="card anim anim-d4" id="sec-charts">
-        <div class="card-section-header">
+        <div class="card-section-header" onclick="handleHeaderClick(event,'chart-collapse-wrap','chart-toggle-btn','','')">
           <div class="card-title">📊 Visual Comparison</div>
           <div class="header-controls">
             <button class="chart-tab active" data-tab="timeline" onclick="switchTab(this)">NW Growth</button>
@@ -2034,6 +2153,7 @@
             <button class="chart-tab" data-tab="composition" onclick="switchTab(this)">Composition</button>
             <button class="chart-tab" data-tab="interest" onclick="switchTab(this)">Interest Paid</button>
           </div>
+          <span class="sec-info info-tip" data-tip="Side-by-side chart of net worth, cashflows, and loan balance over time. Answers: which strategy pulls ahead — and when? Good for: visual learners comparing growth trajectories.">&#9432;</span>
           <button class="amort-toggle open" id="chart-toggle-btn" onclick="toggleSection('chart-collapse-wrap','chart-toggle-btn','','')">
             <span></span>
             <span class="chevron">▼</span>
@@ -2049,9 +2169,10 @@
 
       <!-- Interactive FV Calculator -->
       <div class="card" style="margin-top:16px;" id="sec-fvcalc">
-        <div class="card-section-header">
+        <div class="card-section-header" onclick="handleHeaderClick(event,'fvcalc-collapse-wrap','fvcalc-toggle-btn','Show FV calculator','Hide FV calculator')">
           <div class="card-title">🎯 Interactive FV Calculator</div>
           <div class="header-controls"></div>
+          <span class="sec-info info-tip" data-tip="Explore how different CAGR assumptions change your investment portfolio's future value. Answers: what annual return do I need to beat prepaying? Good for: stress-testing return expectations before committing.">&#9432;</span>
           <button class="amort-toggle" id="fvcalc-toggle-btn" onclick="toggleSection('fvcalc-collapse-wrap','fvcalc-toggle-btn','Show FV calculator','Hide FV calculator')">
             <span style="display:none">Show FV calculator</span>
             <span class="chevron">▼</span>
@@ -2064,9 +2185,10 @@
 
       <!-- Detailed Breakdown -->
       <div class="card" style="margin-top:16px;" id="breakdown-table-card">
-        <div class="card-section-header">
+        <div class="card-section-header" onclick="handleHeaderClick(event,'breakdown-collapse-wrap','breakdown-toggle-btn','Show detailed breakdown','Hide detailed breakdown')">
           <div class="card-title">🔢 Detailed Breakdown</div>
           <div class="header-controls"></div>
+          <span class="sec-info info-tip" data-tip="Every key metric for all three strategies in one table — interest paid, net worth, IRR, loan duration. Answers: exactly how do the numbers compare? Good for: precision comparisons and sharing.">&#9432;</span>
           <button class="amort-toggle" id="breakdown-toggle-btn" onclick="toggleSection('breakdown-collapse-wrap','breakdown-toggle-btn','Show detailed breakdown','Hide detailed breakdown')">
             <span style="display:none">Show detailed breakdown</span>
             <span class="chevron">▼</span>
@@ -2089,13 +2211,14 @@
 
       <!-- Cashflow Streams -->
       <div class="card" style="margin-top:16px;" id="sec-streams">
-        <div class="card-section-header">
+        <div class="card-section-header" onclick="handleHeaderClick(event,'streams-collapse-wrap','streams-toggle-btn','Show cashflow streams','Hide cashflow streams')">
           <div class="card-title">💹 Cashflow Streams</div>
           <div class="header-controls amort-strategy-tabs" id="streams-strat-tabs">
             <button class="amort-strategy-tab active" data-stream="prepay" onclick="switchStreamTab(this)">🏠 Prepay</button>
             <button class="amort-strategy-tab" data-stream="invest" onclick="switchStreamTab(this)">📈 Invest</button>
             <button class="amort-strategy-tab" data-stream="hybrid" onclick="switchStreamTab(this)">⚖️ Hybrid</button>
           </div>
+          <span class="sec-info info-tip" data-tip="Month-by-month view of EMI, prepayment, and investment contributions for one strategy at a time. Answers: where does every rupee go each month? Good for: budgeting and verifying your inputs.">&#9432;</span>
           <button class="amort-toggle" id="streams-toggle-btn" onclick="toggleSection('streams-collapse-wrap','streams-toggle-btn','Show cashflow streams','Hide cashflow streams')">
             <span style="display:none">Show cashflow streams</span>
             <span class="chevron">▼</span>
@@ -2108,9 +2231,10 @@
 
       <!-- Year-end Portfolio Snapshots -->
       <div class="card" style="margin-top:16px;" id="sec-yearend">
-        <div class="card-section-header">
+        <div class="card-section-header" onclick="handleHeaderClick(event,'yearend-collapse-wrap','yearend-toggle-btn','Show year-end snapshots','Hide year-end snapshots')">
           <div class="card-title">📅 Year-end Portfolio Snapshots</div>
           <div class="header-controls"></div>
+          <span class="sec-info info-tip" data-tip="Annual milestones — outstanding loan balance, investment value, and net worth at year end. Answers: where will I stand in year 5, 10, or 20? Good for: milestone planning and mid-course portfolio checks.">&#9432;</span>
           <button class="amort-toggle" id="yearend-toggle-btn" onclick="toggleSection('yearend-collapse-wrap','yearend-toggle-btn','Show year-end snapshots','Hide year-end snapshots')">
             <span style="display:none">Show year-end snapshots</span>
             <span class="chevron">▼</span>
@@ -2123,13 +2247,14 @@
 
       <!-- Per-stream FV Waterfall -->
       <div class="card" style="margin-top:16px;" id="sec-waterfall">
-        <div class="card-section-header">
+        <div class="card-section-header" onclick="handleHeaderClick(event,'waterfall-collapse-wrap','waterfall-toggle-btn','Show FV waterfall','Hide FV waterfall')">
           <div class="card-title">🔬 Per-stream FV Waterfall</div>
           <div class="header-controls amort-strategy-tabs" id="waterfall-strat-tabs">
             <button class="amort-strategy-tab active" data-wfall="prepay" onclick="switchWaterfallTab(this)">🏠 Prepay</button>
             <button class="amort-strategy-tab" data-wfall="invest" onclick="switchWaterfallTab(this)">📈 Invest</button>
             <button class="amort-strategy-tab" data-wfall="hybrid" onclick="switchWaterfallTab(this)">⚖️ Hybrid</button>
           </div>
+          <span class="sec-info info-tip" data-tip="Breaks final net worth into its building blocks — interest saved, portfolio gains, equity unlocked. Answers: what actually drove my result? Good for: understanding the 'why' behind the winning strategy.">&#9432;</span>
           <button class="amort-toggle" id="waterfall-toggle-btn" onclick="toggleSection('waterfall-collapse-wrap','waterfall-toggle-btn','Show FV waterfall','Hide FV waterfall')">
             <span style="display:none">Show FV waterfall</span>
             <span class="chevron">▼</span>
@@ -2142,13 +2267,14 @@
 
       <!-- Amortization Table (Prepay / Hybrid scenario) -->
       <div class="card amort-section" id="sec-schedule" style="margin-top:16px;">
-        <div class="card-section-header">
+        <div class="card-section-header" onclick="handleAmortHeaderClick(event)">
           <div class="card-title">📅 Amortization Schedule</div>
           <div class="header-controls amort-strategy-tabs" id="amort-strat-tabs">
             <button class="amort-strategy-tab active" data-strat="prepay" onclick="switchAmortStrategy(this)">🏠 Prepay</button>
             <button class="amort-strategy-tab" data-strat="invest" onclick="switchAmortStrategy(this)">📈 Invest</button>
             <button class="amort-strategy-tab" data-strat="hybrid" onclick="switchAmortStrategy(this)">⚖️ Hybrid</button>
           </div>
+          <span class="sec-info info-tip" data-tip="Month-by-month loan repayment table — EMI, interest, principal, and extra prepayments for each period. Answers: exactly what do I owe and when does the balance clear? Good for: cash flow planning and bank verification.">&#9432;</span>
           <button class="amort-toggle" id="amort-toggle-btn" onclick="toggleAmort()">
             <span style="display:none">Show amortization table</span>
             <span class="chevron">▼</span>
@@ -2205,13 +2331,14 @@
 
   <!-- ══ CAGR Sensitivity Matrix — full width, outside calc-grid ══ -->
   <div class="card" style="margin-top:16px;" id="sec-sensitivity">
-    <div class="card-section-header">
+    <div class="card-section-header" onclick="handleHeaderClick(event,'sensitivity-collapse-wrap','sensitivity-toggle-btn','Show sensitivity matrix','Hide sensitivity matrix')">
       <div class="card-title">📊 CAGR Sensitivity Matrix</div>
       <div class="header-controls amort-strategy-tabs" id="sensitivity-dim-tabs">
         <button class="amort-strategy-tab active" data-dim="rate" onclick="switchSensitivityDim(this)">vs Loan Rate</button>
         <button class="amort-strategy-tab" data-dim="extra" onclick="switchSensitivityDim(this)">vs Extra Cash</button>
         <button class="amort-strategy-tab" data-dim="tax" onclick="switchSensitivityDim(this)">vs Tax Rate</button>
       </div>
+      <span class="sec-info info-tip" data-tip="Grid showing which strategy wins across a range of investment returns and loan rates. Answers: how fragile is my conclusion to the CAGR assumption? Good for: stress-testing before committing to a strategy.">&#9432;</span>
       <button class="amort-toggle" id="sensitivity-toggle-btn" onclick="toggleSection('sensitivity-collapse-wrap','sensitivity-toggle-btn','Show sensitivity matrix','Hide sensitivity matrix')">
         <span style="display:none">Show sensitivity matrix</span>
         <span class="chevron">▼</span>
@@ -2697,7 +2824,7 @@
       Instagram
     </a>
   </div>
-  <div>Results are estimates for educational purposes. Past returns &ne; future performance. Consult a financial advisor. &nbsp;·&nbsp; <span style="opacity:0.55;">v2.0</span></div>
+  <div>Results are estimates for educational purposes. Past returns &ne; future performance. Consult a financial advisor. &nbsp;·&nbsp; <span style="opacity:0.55;">v2.1</span></div>
 </footer>
 
 <!-- ── Scripts ──────────────────────────────────────────────── -->
@@ -4661,6 +4788,11 @@ function rebuildSensMatrix() {
 }
 
 function switchSensitivityDim(pill) {
+  // Auto-expand the sensitivity section if it's collapsed
+  const wrap = $('sensitivity-collapse-wrap');
+  if (wrap && !wrap.classList.contains('open')) {
+    toggleSection('sensitivity-collapse-wrap', 'sensitivity-toggle-btn', 'Show sensitivity matrix', 'Hide sensitivity matrix');
+  }
   document.querySelectorAll('#sensitivity-dim-tabs .amort-strategy-tab').forEach(p => p.classList.remove('active'));
   pill.classList.add('active');
   // On tab switch: sync col-axis inputs to the new dim's stored state.
@@ -5308,6 +5440,17 @@ Chart.defaults.color = tickColor;
 updateChartDict();
 updateAll();
 
+// ── Click anywhere on a section header to toggle it
+function handleHeaderClick(e, wrapId, btnId, showLbl, hideLbl) {
+  // Ignore clicks that land on a button, tab, or the ⓘ info badge
+  if (e.target.closest('button,[role=button],.info-tip')) return;
+  toggleSection(wrapId, btnId, showLbl, hideLbl);
+}
+function handleAmortHeaderClick(e) {
+  if (e.target.closest('button,[role=button],.info-tip')) return;
+  toggleAmort();
+}
+
 // ── Sync scroll-margin-top to actual header height (handles 1-row vs 2-row wrap)
 function syncHeaderHeight() {
   const h = document.querySelector('.app-header');
@@ -5317,6 +5460,81 @@ function syncHeaderHeight() {
 }
 syncHeaderHeight();
 window.addEventListener('resize', syncHeaderHeight);
+
+// ── Expand All / Collapse All sections
+const ALL_SECTIONS = [
+  ['chart-collapse-wrap',       'chart-toggle-btn',       '', ''],
+  ['fvcalc-collapse-wrap',      'fvcalc-toggle-btn',      'Show FV calculator',        'Hide FV calculator'],
+  ['breakdown-collapse-wrap',   'breakdown-toggle-btn',   'Show detailed breakdown',   'Hide detailed breakdown'],
+  ['streams-collapse-wrap',     'streams-toggle-btn',     'Show cashflow streams',      'Hide cashflow streams'],
+  ['yearend-collapse-wrap',     'yearend-toggle-btn',     'Show year-end snapshots',   'Hide year-end snapshots'],
+  ['waterfall-collapse-wrap',   'waterfall-toggle-btn',   'Show FV waterfall',         'Hide FV waterfall'],
+  ['amort-wrap',                'amort-toggle-btn',       'Show amortization table',   'Hide amortization table'],
+  ['sensitivity-collapse-wrap', 'sensitivity-toggle-btn', 'Show sensitivity matrix',   'Hide sensitivity matrix'],
+];
+function expandAllSections() {
+  ALL_SECTIONS.forEach(([wrapId, btnId, showL, hideL]) => {
+    const wrap = $(wrapId);
+    const btn  = $(btnId);
+    if (!wrap || !btn) return;
+    if (!wrap.classList.contains('open')) {
+      wrap.classList.add('open');
+      btn.classList.add('open');
+      const lbl = btn.querySelector('span:first-child');
+      if (lbl) lbl.textContent = hideL;
+    }
+  });
+  if (chartInst) setTimeout(() => chartInst.resize(), 10);
+}
+function collapseAllSections() {
+  ALL_SECTIONS.forEach(([wrapId, btnId, showL, hideL]) => {
+    const wrap = $(wrapId);
+    const btn  = $(btnId);
+    if (!wrap || !btn) return;
+    if (wrap.classList.contains('open')) {
+      wrap.classList.remove('open');
+      btn.classList.remove('open');
+      const lbl = btn.querySelector('span:first-child');
+      if (lbl) lbl.textContent = showL;
+    }
+  });
+}
+
+// ── Sticky strategy column headers for 🧠 Beyond the Numbers
+(function initBeyondStickyHeaders() {
+  const grid = document.querySelector('.qgv2-primary');
+  if (!grid) return;
+
+  // Insert the sticky bar as a sibling BEFORE qgv2-primary (inside the card),
+  // NOT inside the grid. This lets it stay sticky across BOTH grids
+  // (qgv2-primary + qgv2-context) since its containing block is the whole card.
+  const bar = document.createElement('div');
+  bar.className = 'qv2-sticky-bar';
+  bar.innerHTML = `
+    <div class="qv2-sticky-pill prepay"><span>🏠</span> Full Prepay</div>
+    <div class="qv2-sticky-pill invest"><span>📈</span> Full Invest</div>
+    <div class="qv2-sticky-pill hybrid"><span>⚖️</span> Hybrid Split</div>
+  `;
+  grid.parentNode.insertBefore(bar, grid);
+
+  // Track all 3 heads with a Set so each callback update is cumulative.
+  // Using entries.some() alone is wrong — entries only contains *changed* elements.
+  const heads = grid.querySelectorAll('.qv2-head');
+  if (!heads.length) return;
+  const visibleHeads = new Set(heads); // assume all visible on start
+  const obs = new IntersectionObserver(
+    entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) visibleHeads.add(e.target);
+        else visibleHeads.delete(e.target);
+      });
+      // Show sticky bar only when none of the 3 original headers are on-screen
+      bar.classList.toggle('visible', visibleHeads.size === 0);
+    },
+    { threshold: 0.1 }
+  );
+  heads.forEach(h => obs.observe(h));
+})();
 </script>
 </body>
 </html>

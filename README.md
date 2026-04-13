@@ -22,24 +22,6 @@ Every result is **post capital-gains-tax** (applied year-by-year) and features a
 
 ---
 
-## v2.0 — What's New
-
-- **26-currency support** — every number in the tool formats to your selected currency instantly
-- **Compact / Full number toggle** — switch between 1.2M and 1,200,000 display globally
-- **Dark / Light theme** — OS preference auto-detected on first load; manual override persists
-- **localStorage persistence** — all inputs and ribbon settings restored on next page load
-- **CAGR Sensitivity Matrix** — sweep two variables (CAGR × loan rate / extra cash / tax rate) simultaneously; heat-map winner cells
-- **Post-tax returns modelled year-by-year** — not just a lump deduction at exit
-- **Inflation-adjusted Present Value** on every strategy card
-- **Interactive FV Calculator** — per-scenario future-value breakdown
-- **Cashflow Streams** — per-stream FV table with during-loan and freed-months phases
-- **Year-end Portfolio Snapshots** — annual post-tax NW for all 3 strategies in one table
-- **Per-stream FV Waterfall** — shows exactly how much each lever contributed to final NW
-- **FAQ** — 8 questions, 2-column animated grid, colour-coded category chips
-- **Beyond the Numbers** expanded — 8 qualitative accordions (Financial Pros/Cons, Psychological Pros/Cons, Best/Worst when, Best/Worst for)
-- **Mobile bottom nav bar** — 5 quick-jump buttons for inputs, results, charts, schedule, beyond
-- **Full WCAG AA contrast** in both themes — 13 semantic colour tokens with verified ratios
-
 ---
 
 ## Features
@@ -193,10 +175,13 @@ Two-column animated grid (single column on mobile). Each question has a colour-c
 ### 📱 Mobile
 
 - **Bottom navigation bar** — sticky 5-button quick-jump: Inputs · Results · Charts · Schedule · Beyond
+- **Section headers wrap at ≤640px** — title + ⓘ badge + ▼ chevron stay on row 1; tab pills (strategy/chart tabs) flow onto row 2 at full width
+- **Expand All / Collapse All bar stretches full-width** on narrow screens with equal-size buttons
 - iOS zoom-on-focus prevention (`font-size: max(16px, …)` on all inputs)
-- `touch-action: manipulation` on all interactive elements — removes 300ms tap delay
+- `touch-action: manipulation` on all interactive elements including section headers — removes 300ms tap delay
 - `overscroll-behavior-x: contain` on sensitivity matrix — prevents accidental back-navigation
 - Chart tabs wrap to a second line on narrow viewports
+- Sticky Beyond the Numbers bar hidden on mobile (≤900px) — not needed in single-column layout
 
 ---
 
@@ -284,6 +269,49 @@ Shown as "Present Value" on strategy cards and in the breakdown table.
 ## Disclaimer
 
 Results are estimates for **educational purposes only**. Past market returns do not guarantee future performance. This tool does not constitute financial advice. Consult a qualified financial advisor before making investment or mortgage decisions.
+
+---
+
+## Changelog
+
+### v2.1 — 13 Apr 2026
+- **Expand All / Collapse All** — button bar above first results section; opens or closes all 8 sections simultaneously
+- **Click-anywhere section headers** — entire header row is a toggle target; tab pills and ⓘ badge still fire independently
+- **Section ⓘ tooltips** — every section header now has an info badge explaining what the section shows, what question it answers, and who should look at it
+- **Sticky Beyond the Numbers column headers** — Prepay / Invest / Hybrid labels pin to the top as you scroll through all 8 qualitative accordion categories (desktop only)
+- **Sensitivity tab → auto-expand** — clicking a Sensitivity Matrix tab opens the section automatically if collapsed
+- **Mobile section header wrap** — at ≤640px: title + ⓘ + ▼ on row 1, tab pills full-width on row 2
+- **Mobile Expand All bar** — stretches full-width with equal-size buttons on narrow screens
+- **`touch-action: manipulation`** extended to section headers and expand buttons — eliminates 300 ms tap delay
+
+### v2.0 — 12–13 Apr 2026
+- 26-currency support with live reformatting
+- Compact / Full number display toggle (1.2M ↔ 1,200,000)
+- Dark / Light theme with OS `prefers-color-scheme` auto-detect; manual override persists
+- `localStorage` persistence for all inputs and ribbon settings
+- CAGR Sensitivity Matrix — sweep two axes simultaneously with configurable min/max/step; heat-map winner cells; current-input cell outlined
+- Post-tax capital gains modelled year-by-year (not at exit)
+- Inflation-adjusted Present Value on every strategy card and breakdown table
+- Interactive FV Calculator section
+- Cashflow Streams — per-strategy tab with during-loan and freed-months FV breakdown
+- Year-end Portfolio Snapshots — annual net-worth table across all 3 strategies
+- Per-stream FV Waterfall — quantifies each lever's contribution to final net worth
+- FAQ — 8 questions, 2-column animated accordion grid with category chips
+- Beyond the Numbers redesigned — 8 qualitative accordion sections across two grids
+- Mobile bottom navigation bar — 5 quick-jump buttons
+- Amortization Schedule — full month-by-month table with year-collapse rows, formula headers, strategy tab-switcher
+- Full WCAG AA contrast across both themes — 13 semantic CSS colour tokens
+
+### v1.0 — 12 Apr 2026
+- Three-strategy mortgage simulator: Full Prepay, Full Invest, Hybrid Split
+- 11 inputs: loan amount, interest rate, tenure, extra cash, extra EMIs/year, EMI hike %, hybrid split slider, CAGR, inflation, tax rate
+- Decision banner with live recommended strategy and plain-English reason
+- Three strategy cards: post-tax nominal net worth, inflation-adjusted present value, strategy-specific stats
+- Visual Comparison — 4-tab Chart.js chart (NW Growth, Net Worth, Composition, Interest Paid)
+- Detailed Breakdown table (side-by-side key metrics)
+- CAGR sensitivity cards (bar visualisation across CAGR scenarios)
+- Beyond the Numbers — 3-column qualitative grid (Financial Pros/Cons, Psychological Pros/Cons)
+- Single self-contained HTML file, zero build dependencies
 
 ---
 
