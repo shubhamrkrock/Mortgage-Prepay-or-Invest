@@ -1,10 +1,229 @@
-# 🧮 Mortgage Strategy Simulator
+# 💰 Mortgage Suite
 
-**Prepay · Invest · Hybrid** — Compare all three strategies side-by-side, post-tax and inflation-adjusted.
+**EMI Matrix · Strategy Simulator · Holistic Quiz** — A complete mortgage decision toolkit in a single file.
 
-> _While repaying a mortgage — should you Prepay, Invest, or do Both?_
+> _More than a calculator — a decision framework._
 
 🔗 **[Live Demo →](https://shubhamrkrock.github.io/Mortgage-Prepay-or-Invest/)**
+
+![Mortgage Suite preview](og-image.svg)
+
+---
+
+## What It Does
+
+Three tools in one, accessible from a unified suite navigation bar:
+
+| Tool | What it answers |
+|---|---|
+| **📊 EMI Matrix** | What will my monthly payment be across every rate × tenure combination? |
+| **🏠 Strategy Simulator** | Should I prepay, invest, or do both — and by how much? |
+| **🎯 Holistic Quiz** | Given my personality and life situation, which strategy actually fits me? |
+
+All calculations are **post capital-gains-tax** and **inflation-adjusted**. No sign-in, no install, no server — one self-contained HTML file.
+
+---
+
+## Tools
+
+### 📊 EMI Matrix
+
+Rate × tenure matrix showing monthly EMI for every combination, colour-coded to your budget:
+
+- **🟢 Comfortable** — EMI ≤ comfort threshold % of budget
+- **🟡 Tight** — EMI between threshold and 100% of budget
+- **🔴 Over budget** — EMI exceeds budget
+- Click any cell for a full breakdown: EMI, total interest, total cost, budget bar
+- **Configurable axes** — set min/max/step for both Rate (%) and Tenure (years)
+- **Comfort threshold** — slider + number input controlling the green/amber boundary
+- Top-right loan badge shows the active loan amount at a glance
+- Header stat cards: best shortest payoff + lowest EMI combinations
+- Loan amount syncs bidirectionally with the Strategy Simulator
+
+### 🏠 Strategy Simulator — Prepay · Invest · Hybrid
+
+Compare all three strategies side-by-side over the full loan horizon:
+
+| Strategy | Mechanics |
+|---|---|
+| **Full Prepay** | All extra cash reduces principal monthly. Loan closes early. Freed EMI + extra reinvested for remaining months. |
+| **Full Invest** | Loan runs full term. 100% of extra cash invested from month 1. |
+| **Hybrid** | Extra cash split by a user-controlled slider — part prepays, part invests. |
+
+**10 analysis views:**
+1. Decision Banner — live recommendation with plain-English reason
+2. Strategy Cards — nominal + real NW, loan-close date, vs-comparison
+3. NW Growth chart — year-by-year post-tax net worth, all 3 strategies
+4. Net Worth bar chart — nominal vs real side-by-side
+5. Composition chart — principal invested vs net returns (stacked)
+6. Interest Paid chart
+7. Detailed Breakdown table — 12 metrics across all 3 strategies
+8. Cashflow Streams — per-stream FV breakdown with timeline bar
+9. Year-end Portfolio Snapshots — annual NW at each year-end
+10. Per-stream FV Waterfall — quantifies each lever's contribution
+
+**3 optimisation levers:**
+- Extra monthly cash (with optional annual step-up %)
+- Extra EMIs per year (lump-sum annual payment to principal)
+- EMI Hike % per year (gradual monthly payment increase)
+
+**Full amortization schedule** — month-by-month table with year-collapse rows and formula headers.
+
+**CAGR Sensitivity Matrix** — sweeps CAGR vs Loan Rate / Extra Cash / Tax Rate simultaneously; heat-map winner cells.
+
+### 🧠 Holistic Strategy Quiz
+
+20 questions across 4 ranked sections — covers what the numbers can't:
+
+- **Core Drivers** — financial priorities, risk tolerance, loan-to-income
+- **Behavioral** — loss aversion, market discipline, sleep-test
+- **Life Situation** — job security, dependants, emergency fund
+- **Advanced Factors** — tax optimisation, legacy, opportunity cost awareness
+
+Produces a weighted verdict with explanation. Input gate checks whether you've entered real numbers before the quiz runs.
+
+### 📋 Beyond the Numbers
+
+8 qualitative accordion sections comparing Prepay / Invest / Hybrid across:
+Financial Pros/Cons · Psychological Pros/Cons · Best When · Worst When · Best For · Worst For
+
+### ❓ FAQ
+
+8 animated accordion questions covering strategy, inputs, results, and the underlying math.
+
+---
+
+## Inputs
+
+**11 parameters across 3 groups:**
+
+| Group | Parameters |
+|---|---|
+| Loan | Amount · Annual Rate · Tenure (years + months) |
+| Optimisation | Extra Monthly Cash · Step-up % · Extra EMIs/yr · EMI Hike %/yr · Hybrid split |
+| Assumptions | CAGR · Inflation · Capital Gains Tax |
+
+All sliders have live-value labels. All number inputs have ▲/▼ steppers. Decimal values accepted everywhere.
+
+---
+
+## UI & UX
+
+- **Dark / Light theme** — OS `prefers-color-scheme` auto-detect; manual toggle persists
+- **26 currencies** — live reformatting with flag icons
+- **Compact / Full number toggle** — `1.2M` ↔ `1,200,000`
+- **Entrance animations** — staggered `fadeSlideUp` on every view transition
+- **Mobile-first** — responsive at 860px, 640px, 520px, 480px breakpoints
+- **Unified footer** — LinkedIn + Instagram links on all three views
+- **`localStorage` persistence** — all inputs survive page refresh
+- **WCAG AA colour tokens** — verified contrast ratios in both themes
+
+---
+
+## How to Use
+
+### Option A — Live version
+**[shubhamrkrock.github.io/Mortgage-Prepay-or-Invest/](https://shubhamrkrock.github.io/Mortgage-Prepay-or-Invest/)**
+
+### Option B — Run locally
+```bash
+git clone https://github.com/shubhamrkrock/Mortgage-Prepay-or-Invest.git
+cd Mortgage-Prepay-or-Invest
+open index.html   # no build step — single HTML file
+```
+
+---
+
+## Technical Notes
+
+- **Zero installed dependencies** — Chart.js v4.4.3 via CDN (jsDelivr)
+- **Pure vanilla JS** — no framework, no bundler, no build step
+- **Single file** — all HTML, CSS, and JS in `index.html` (~400 KB)
+- **Finance engine** — month-by-month amortization simulation (not analytical NPER); correctly models extra EMIs, annual hike %, and hybrid splits
+- **Tax model** — capital gains applied year-by-year on gains only; principal not taxed
+- **Inflation** — `Real NW = Nominal NW ÷ (1 + r)^n`
+- **CSS token system** — `--accent`, `--surface`, `--border`, `--sb-thumb/track` and 13 semantic tokens; full dark + light override block
+- **Scoped EMI CSS** — all EMI Matrix styles under `#view-emi` to isolate from Prepay styles
+- **SEO** — canonical URL, OG tags, Twitter card, JSON-LD WebApplication schema, per-view dynamic `<title>` and `<meta description>`
+
+---
+
+## Calculation Methodology
+
+### Equal-footing comparison
+
+All strategies receive identical inputs over a **fixed horizon** equal to the original tenure. Strategies that close the loan early reinvest freed cash (EMI + extra) for all remaining months — no strategy loses invested time.
+
+### Month-by-month vs NPER
+
+The simulator uses month-by-month amortization. Results match NPER when extra payments = 0, but diverge (correctly) under extra EMIs/year and annual EMI hike — which NPER cannot model.
+
+### Tax
+
+```
+Annual post-tax return = Gross Return × (1 − Tax Rate)
+```
+Applied year-by-year on gains only.
+
+### Inflation
+
+```
+Real NW = Nominal NW ÷ (1 + inflation_rate)^tenure_years
+```
+
+---
+
+## Disclaimer
+
+Results are estimates for **educational purposes only**. Past market returns do not guarantee future performance. This tool does not constitute financial advice. Consult a qualified financial advisor before making mortgage or investment decisions.
+
+---
+
+## Changelog
+
+### v2.3 — 14 Apr 2026
+- **EMI Matrix merged into suite** — unified nav, shared loan amount sync, shared currency/theme controls
+- **Staggered entrance animations** — `fadeSlideUp` replays on every view switch for all three sections
+- **Config cards** — Comfort Threshold, Tenure Rows, Rate Columns wrapped in surface boxes
+- **Matrix cell hover** — brightness + saturation + white inset ring + tint overlay
+- **Scrollbar tokens** — `--sb-thumb` / `--sb-track` neutral grey replacing accent purple
+- **Footer unified** — consistent `app-footer` with "Connect with me on" + LinkedIn + Instagram across all views
+- **Mobile breakpoints** — EMI Matrix responsive at 860px / 520px
+- **SEO** — OG tags, Twitter card, JSON-LD schema, favicon, theme-color, per-view dynamic title + description
+- **Home page** — hero dot removed; `home-hero` entrance animation added
+- **Comfort slider** — min changed 50→30; spin buttons restored; `step="any"` decimal support
+- **Matrix header sizes** — row + column headers unified at 0.65rem
+- **Detail card** — margins aligned to matrix-panel padding (web + mobile)
+
+### v2.2 — 13 Apr 2026
+- Holistic Strategy Quiz — full redesign (4 ranked sections, 20 questions)
+- Input gate screen with 4 severity levels
+- Scrollbar visibility improvements (Chrome/Safari/Firefox)
+- Quiz mobile bottom-sheet layout
+- Light-theme quiz WCAG AA fixes
+
+### v2.1 — 13 Apr 2026
+- Expand All / Collapse All button bar
+- Click-anywhere section headers
+- Section ⓘ tooltips
+- Sticky Beyond the Numbers column headers
+- Sensitivity tab auto-expand
+- Mobile section header wrap + Expand All bar
+
+### v2.0 — 12–13 Apr 2026
+- 26-currency support
+- Compact/Full number toggle
+- Dark/Light theme with OS auto-detect
+- localStorage persistence
+- CAGR Sensitivity Matrix
+- Post-tax year-by-year capital gains model
+- Inflation-adjusted Present Value
+- Interactive FV Calculator
+- Cashflow Streams, Year-end Snapshots, Per-stream Waterfall
+- FAQ, Beyond the Numbers redesign
+- Mobile bottom navigation bar
+- Full amortization schedule
+
 
 ---
 
