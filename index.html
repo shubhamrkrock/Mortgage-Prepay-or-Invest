@@ -405,7 +405,8 @@
       letter-spacing: -0.01em;
     }
     /* Wider left-indent for inputs that have a currency prefix (symbol can be 1-3 chars) */
-    .cur-wrap input { padding-left: 38px; }
+    /* .cur-wrap uses flex symbol outside input — no padding-left needed */
+    .cur-sym { font-size: 1rem; font-weight: 700; color: var(--text-muted); flex-shrink: 0; }
     .number-input-wrap .suffix {
       position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
       color: var(--text-muted); font-size: 0.85rem; pointer-events: none;
@@ -2806,8 +2807,8 @@
             <span class="live-value" id="lv-loan"></span>
           </div>
           <div class="number-row">
-            <div class="number-input-wrap cur-wrap">
-              <span class="prefix inp-cur-prefix">$</span>
+              <span class="cur-sym inp-cur-prefix">$</span>
+            <div class="number-input-wrap">
               <input type="number" id="inp-loan" min="10000" step="5000" value="100000" oninput="onPrepayLoanInput()" />
             </div>
             <div class="stepper">
@@ -2885,8 +2886,8 @@
               <span class="live-value" id="lv-extra"></span>
             </div>
             <div class="number-row">
-              <div class="number-input-wrap cur-wrap">
-                <span class="prefix inp-cur-prefix">$</span>
+              <span class="cur-sym inp-cur-prefix">$</span>
+              <div class="number-input-wrap">
                 <input type="number" id="inp-extra" min="0" step="100" value="100" />
               </div>
               <div class="stepper">
@@ -3984,18 +3985,18 @@ function showView(name) {
 /* Unified nav handlers — operate on both tools */
 function setCurrency(code) {
   APP_STATE.currency = code;
-  // EMI rendering reads APP_STATE.currency directly — no EMI_S.ccy sync needed
   // Update all currency selects on page
   document.querySelectorAll('.nav-ccy-select').forEach(s => s.value = code);
-  // Update EMI symbol indicators
+  // Update ALL symbol indicators regardless of active view
   const sym = CUR[code]?.sym || code;
   const emiLoanSym = document.getElementById('emi-loan-sym');
   const emiBgtSym  = document.getElementById('emi-bgt-sym');
   if (emiLoanSym) emiLoanSym.textContent = sym;
   if (emiBgtSym)  emiBgtSym.textContent  = sym;
+  updateInputPrefixes(); // updates .inp-cur-prefix in Prepay view
   // Re-render active tool
   if (SUITE.view === 'emi') emiBuildAndRender();
-  if (SUITE.view === 'prepay') { updateInputPrefixes(); updateAll(); }
+  if (SUITE.view === 'prepay') updateAll();
 }
 
 function toggleTheme() {
