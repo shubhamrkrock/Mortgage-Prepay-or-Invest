@@ -51,7 +51,7 @@ Compare all three strategies side-by-side over the full loan horizon:
 | **Full Invest** | Loan runs full term. 100% of extra cash invested from month 1. |
 | **Hybrid** | Extra cash split by a user-controlled slider — part prepays, part invests. |
 
-**10 analysis views:**
+**12 analysis views:**
 1. Decision Banner — live recommendation with plain-English reason
 2. Strategy Cards — nominal + real NW, loan-close date, vs-comparison
 3. NW Growth chart — year-by-year post-tax net worth, all 3 strategies
@@ -62,6 +62,8 @@ Compare all three strategies side-by-side over the full loan horizon:
 8. Cashflow Streams — per-stream FV breakdown with timeline bar
 9. Year-end Portfolio Snapshots — annual NW at each year-end
 10. Per-stream FV Waterfall — quantifies each lever's contribution
+11. Future-Value Calculator — interactive horizon slider with synced calendar dropdowns and y/m inputs
+12. CAGR Sensitivity Matrix — sweeps CAGR vs Loan Rate / Extra Cash / Tax Rate; heat-map winner cells
 
 **3 optimisation levers:**
 - Extra monthly cash (with optional annual step-up %)
@@ -69,8 +71,6 @@ Compare all three strategies side-by-side over the full loan horizon:
 - EMI Hike % per year (gradual monthly payment increase)
 
 **Full amortization schedule** — month-by-month table with year-collapse rows and formula headers.
-
-**CAGR Sensitivity Matrix** — sweeps CAGR vs Loan Rate / Extra Cash / Tax Rate simultaneously; heat-map winner cells.
 
 ### 🧠 Holistic Strategy Quiz
 
@@ -104,9 +104,14 @@ Country-specific "How much can I borrow?" calculator. Automatically applies the 
 8 qualitative accordion sections comparing Prepay / Invest / Hybrid across:
 Financial Pros/Cons · Psychological Pros/Cons · Best When · Worst When · Best For · Worst For
 
-### ❓ FAQ
+### ❓ FAQ (all pages)
 
-8 animated accordion questions covering strategy, inputs, results, and the underlying math.
+Every page has its own FAQ section with smooth-animated accordion questions. Answers contain **navigation links** that scroll directly to the relevant section (offset for the sticky ribbon). Categories are colour-coded: Strategy · Inputs · Results · Math · General · Navigation.
+
+- **Home** — 6 FAQs: what the suite does, where to start, data privacy, cross-tool value transfer, country support, mobile
+- **Eligibility** — 7 FAQs: why loan is lower than expected, existing debts, stress-test buffer, headline cards, LTV tracker, country support (sources & last-updated), cross-link to simulator
+- **EMI Matrix** — 6 FAQs: colour-coding, budget input, headline cards, detail card, next steps, why shorter tenure saves interest
+- **Strategy Simulator** — 20 FAQs: recommendation & quiz, scenario cards, visual comparison, cashflow streams, year-end snapshots, FV waterfall, amortisation, FV calculator, sensitivity matrix, beyond-the-numbers, input levers, breakdown table, strategy fairness, loan close dates, EMI hike, CAGR & tax, net worth methodology, interest saved, nominal vs real NW
 
 ---
 
@@ -199,6 +204,15 @@ Results are estimates for **educational purposes only**. Past market returns do 
 ---
 
 ## Changelog
+
+### v3.1 — 15 Apr 2026
+- **LTV Milestone Tracker** — shows when LTV drops below a target; calculates rate-reduction savings
+- **Global loan start date** — synced month/year selector across Eligibility and Strategy Simulator; all tables and charts show calendar dates alongside relative durations
+- **Calendar date propagation** — scenario cards, decision banner, charts, breakdown table, cashflow streams, year-end snapshots, FV waterfall, amortisation schedule and FV calculator all display calendar dates (e.g. "Jan 2029") with year-range labels ("May 2026 – Apr 2027")
+- **FV Calculator enhancements** — linear slider, synced calendar month/year dropdowns, y/m number inputs with steppers
+- **Apply-in-month dropdown** — replaced 1–12 slider with month-name select
+- **FAQ sections on all 4 pages** — tokenised accordion styling; 39 total FAQs with colour-coded categories (Strategy · Inputs · Results · Math · General · Navigation); answers contain deep-links that scroll to the relevant section (offset for 52px sticky ribbon)
+- **Unified button styles** — `.amort-strategy-tab` now matches `.chart-tab` across Visual Comparison, Cashflow Streams, Year-End Snapshots, FV Waterfall, Amortisation, and Sensitivity Matrix
 
 ### v3.0 — 15 Apr 2026
 - **Loan Eligibility tool (BETA)** — full "How much can I borrow?" module with 26-currency regulatory engine
