@@ -1,6 +1,6 @@
 # 💰 Mortgage Suite
 
-**EMI Matrix · Strategy Simulator · Holistic Quiz** — A complete mortgage decision toolkit in a single file.
+**EMI Matrix · Strategy Simulator · Loan Eligibility · Holistic Quiz** — A complete mortgage decision toolkit in a single file.
 
 > _More than a calculator — a decision framework._
 
@@ -12,15 +12,16 @@
 
 ## What It Does
 
-Three tools in one, accessible from a unified suite navigation bar:
+Four tools in one, accessible from a unified suite navigation bar:
 
 | Tool | What it answers |
 |---|---|
 | **📊 EMI Matrix** | What will my monthly payment be across every rate × tenure combination? |
 | **🏠 Strategy Simulator** | Should I prepay, invest, or do both — and by how much? |
+| **🏦 Loan Eligibility** | How much can I actually borrow — based on my country's regulations? |
 | **🎯 Holistic Quiz** | Given my personality and life situation, which strategy actually fits me? |
 
-All calculations are **post capital-gains-tax** and **inflation-adjusted**. No sign-in, no install, no server — one self-contained HTML file.
+All calculations are **post capital-gains-tax** and **inflation-adjusted**. No sign-in, no install, no server — one self-contained HTML file + one JS rules library.
 
 ---
 
@@ -82,6 +83,22 @@ Compare all three strategies side-by-side over the full loan horizon:
 
 Produces a weighted verdict with explanation. Input gate checks whether you've entered real numbers before the quiz runs.
 
+### 🏦 Loan Eligibility (BETA)
+
+Country-specific "How much can I borrow?" calculator. Automatically applies the selected currency's regulatory framework:
+
+- **26 currencies** — DTI/DSTI caps, LTV limits, tenure & age constraints, stress-test buffers, income multipliers
+- **9 inputs** — Monthly income, existing debts, property value, own contribution (down payment), interest rate, desired tenure, age, employment type, first-home toggle
+- **4 headline metrics** — Eligible Loan, Max EMI, Effective Tenure, Min Down Payment
+- **10-row constraint breakdown** with ⓘ tooltips on every row — each explains the business logic, formula, what question it answers, and who should care
+- **Own contribution logic** — requested loan = property − contribution; binding constraint can be income, LTV, or contribution
+- **Dynamic income label** — switches between "Gross Monthly Income" and "Net Monthly Income" based on country convention
+- **Contribution hint** — live "Down payment: X% of property · Min required: Y ✓/✗"
+- **Regulation notes, source URLs & regulator pills** — links to official regulatory documentation for every country
+- **Cross-links** — one-click transfer of eligible loan amount into EMI Matrix or Strategy Simulator (with toast notification)
+- **Powered by `loan-eligibility-rules.js`** — external rules library with per-country regulation objects (DSTI, LTV tiers, stress-test, age limits, tenure caps, income types, source URLs)
+- **BETA disclaimer** — prominently warns users to verify with their bank
+
 ### 📋 Beyond the Numbers
 
 8 qualitative accordion sections comparing Prepay / Invest / Hybrid across:
@@ -95,13 +112,14 @@ Financial Pros/Cons · Psychological Pros/Cons · Best When · Worst When · Bes
 
 ## Inputs
 
-**11 parameters across 3 groups:**
+**20 parameters across 4 groups:**
 
 | Group | Parameters |
 |---|---|
 | Loan | Amount · Annual Rate · Tenure (years + months) |
 | Optimisation | Extra Monthly Cash · Step-up % · Extra EMIs/yr · EMI Hike %/yr · Hybrid split |
 | Assumptions | CAGR · Inflation · Capital Gains Tax |
+| Eligibility | Monthly Income · Existing Debts · Property Value · Own Contribution · Interest Rate · Desired Tenure · Age · Employment Type · First Home |
 
 All sliders have live-value labels. All number inputs have ▲/▼ steppers. Decimal values accepted everywhere.
 
@@ -113,9 +131,9 @@ All sliders have live-value labels. All number inputs have ▲/▼ steppers. Dec
 - **26 currencies** — live reformatting with flag icons
 - **Compact / Full number toggle** — `1.2M` ↔ `1,200,000`
 - **Entrance animations** — staggered `fadeSlideUp` on every view transition
-- **Mobile-first** — responsive at 860px, 640px, 520px, 480px breakpoints
-- **Unified footer** — LinkedIn + Instagram links on all three views
-- **`localStorage` persistence** — all inputs survive page refresh
+- **Mobile-first** — responsive at 1040px, 860px, 640px, 520px, 480px, 420px breakpoints
+- **Unified footer** — LinkedIn + Instagram links on all four views
+- **`localStorage` persistence** — all inputs survive page refresh (keys: `mms_v1`, `mms_elig_v1`)
 - **WCAG AA colour tokens** — verified contrast ratios in both themes
 
 ---
@@ -138,8 +156,9 @@ open index.html   # no build step — single HTML file
 
 - **Zero installed dependencies** — Chart.js v4.4.3 via CDN (jsDelivr)
 - **Pure vanilla JS** — no framework, no bundler, no build step
-- **Single file** — all HTML, CSS, and JS in `index.html` (~400 KB)
+- **Single file** — all HTML, CSS, and JS in `index.html` (~400 KB) + `loan-eligibility-rules.js` (~1 KB per country, 26 countries)
 - **Finance engine** — month-by-month amortization simulation (not analytical NPER); correctly models extra EMIs, annual hike %, and hybrid splits
+- **Eligibility engine** — `computeEligibility()` in external JS; per-country regulation objects with DSTI/LTV/stress-test/age/tenure rules
 - **Tax model** — capital gains applied year-by-year on gains only; principal not taxed
 - **Inflation** — `Real NW = Nominal NW ÷ (1 + r)^n`
 - **CSS token system** — `--accent`, `--surface`, `--border`, `--sb-thumb/track` and 13 semantic tokens; full dark + light override block
@@ -180,6 +199,21 @@ Results are estimates for **educational purposes only**. Past market returns do 
 ---
 
 ## Changelog
+
+### v3.0 — 15 Apr 2026
+- **Loan Eligibility tool (BETA)** — full "How much can I borrow?" module with 26-currency regulatory engine
+- **`loan-eligibility-rules.js`** — external rules library: per-country DSTI/LTV/stress-test/age/tenure/income-type, with source URLs and regulator metadata
+- **Own Contribution / Down Payment** input — requested loan = property − contribution; binding constraint can be income, LTV, or contribution
+- **Constraint breakdown tooltips** — all 10 rows have ⓘ rich tooltips explaining business logic, formula, what it answers, and who should look at it (same pattern as Simulator section tooltips)
+- **Cross-links** — one-click transfer of eligible loan into EMI Matrix or Strategy Simulator, with toast confirmation
+- **Dynamic income label** — auto-switches "Gross" / "Net" per country convention
+- **Contribution hint** — live "Down payment X% · Min required Y ✓/✗"
+- **BETA disclaimer** — prominent warning box below hero
+- **Country/regulator/date pills** — live metadata below hero
+- **Regulation notes & source URLs** — per-country regulatory footnotes with links to official documents
+- **Mobile responsiveness** — eligibility headline grid stacks 2→1 col at 420px; breakdown table font scales; tooltip sizing
+- **134 → 0 inline style warnings** — all eligibility, EMI Matrix, and Prepay section inline styles extracted to CSS classes
+- **Browser compat** — 5 vendor-prefix gaps fixed; `COMPAT` comments on remaining browser-support properties
 
 ### v2.3 — 14 Apr 2026
 - **EMI Matrix merged into suite** — unified nav, shared loan amount sync, shared currency/theme controls
@@ -229,7 +263,7 @@ Results are estimates for **educational purposes only**. Past market returns do 
 
 ## What It Does
 
-Most mortgage calculators tell you how much interest you save by prepaying. This tool goes further — it shows you the **net worth outcome** of three complete strategies over the life of your loan, with post-capital-gains-tax and inflation-adjusted results, so you can make a genuinely informed decision.
+Most mortgage calculators tell you how much interest you save by prepaying. This tool goes further — it shows you the **net worth outcome** of three complete strategies over the life of your loan, with post-capital-gains-tax and inflation-adjusted results, **plus** a country-specific eligibility check so you know how much you can actually borrow before you start planning.
 
 | Strategy | What happens to your extra monthly cash |
 |---|---|
@@ -476,10 +510,11 @@ Shown as "Present Value" on strategy cards and in the breakdown table.
 
 - **Zero installed dependencies** — Chart.js v4.4.3 loaded via CDN (jsDelivr)
 - **Pure vanilla JS** — no framework, no bundler, no build step
-- **Single file** — all HTML, CSS, and JS in `index.html`
+- **Single file** — all HTML, CSS, and JS in `index.html` + `loan-eligibility-rules.js`
 - **Finance engine** — EMI via annuity formula; FV via standard compound-interest formulas
+- **Eligibility engine** — `computeEligibility()` with per-country regulation objects; external rules library
 - **Theme system** — 13 semantic CSS colour tokens with WCAG AA–verified values for both dark and light themes; OS preference auto-detected via `prefers-color-scheme`
-- **Persistence** — `localStorage` key `mms_v1` (schema v1); fails silently in private browsing
+- **Persistence** — `localStorage` keys `mms_v1` + `mms_elig_v1`; fails silently in private browsing
 - **Tooltip engine** — fixed-position global tooltip; viewport-aware, never clipped by `overflow: hidden`
 - **Chart plugins** — custom bar data-label plugin (contrast-aware text), composition totals plugin (smart bar-end positioning)
 
@@ -492,6 +527,18 @@ Results are estimates for **educational purposes only**. Past market returns do 
 ---
 
 ## Changelog
+
+### v3.0 — 15 Apr 2026
+- **Loan Eligibility (BETA)** — 26-currency "How much can I borrow?" with own contribution, constraint breakdown tooltips, cross-links, BETA disclaimer, mobile responsive
+- **`loan-eligibility-rules.js`** — external per-country regulatory rules engine
+- **134 → 0 inline style warnings** — full CSS class extraction across all sections
+- **Browser compat** — vendor-prefix fixes + COMPAT comments
+
+### v2.3 — 14 Apr 2026
+- **EMI Matrix merged into suite** — unified nav, shared loan amount sync, shared currency/theme controls
+- **Staggered entrance animations, config cards, matrix cell hover, scrollbar tokens, unified footer**
+- **SEO** — OG tags, Twitter card, JSON-LD, per-view dynamic title + description
+- **Mobile breakpoints** — EMI Matrix responsive at 860px / 520px
 
 ### v2.2 — 13 Apr 2026
 - **Holistic Strategy Quiz — full redesign** — 4 ranked sections (20 questions, 5 each), covering all 8 Beyond the Numbers pillars in order of impact: Core Drivers → Behavioral → Life Situation → Advanced Factors

@@ -15,6 +15,8 @@
 
   <!-- ── Favicon ──────────────────────────────────────────────── -->
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x1F4B0;</text></svg>" />
+  <!-- COMPAT: theme-color is a progressive enhancement for Chrome/Edge/Safari mobile
+       address bar tinting. Firefox & Opera ignore it — that's fine, no fallback needed. -->
   <meta name="theme-color" content="#6c63ff" />
 
   <!-- ── Open Graph (LinkedIn, WhatsApp, Slack) ───────────────── -->
@@ -141,6 +143,9 @@
     [data-theme="light"] ::-webkit-scrollbar-track { background: var(--sb-track); }
     [data-theme="light"] ::-webkit-scrollbar-thumb { background: var(--sb-thumb); border-radius: 4px; }
     [data-theme="light"] ::-webkit-scrollbar-thumb:hover { background: #8d97aa; }
+    /* COMPAT: scrollbar-color / scrollbar-width are standard CSS (W3C) for Firefox 64+
+       and Chrome 121+. Older Chrome/Safari use ::-webkit-scrollbar (above). Both must
+       coexist — removing either breaks scrollbar styling in one browser family. */
     /* Firefox: root viewport scrollbar */
     [data-theme="light"] { scrollbar-color: var(--sb-thumb) var(--sb-track); }
     /* Firefox: also override ALL scrollable children (e.g. quiz modal) in light mode */
@@ -192,6 +197,8 @@
       min-height: 100vh;
       line-height: 1.6;
       -webkit-font-smoothing: antialiased;
+      /* COMPAT: -webkit- prefix needed for Safari/iOS; unprefixed for Chrome/Edge/Firefox.
+         Do NOT remove either — prevents font inflation on mobile orientation change. */
       -webkit-text-size-adjust: 100%;
       text-size-adjust: 100%;
     }
@@ -217,6 +224,8 @@
     .suite-brand-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
     .suite-links {
       display: flex; align-items: center; flex: 1;
+      /* COMPAT: scrollbar-width:none hides scrollbar in Firefox;
+         ::-webkit-scrollbar{display:none} below does the same for Chrome/Safari. */
       overflow-x: auto; scrollbar-width: none; gap: 0;
     }
     .suite-links::-webkit-scrollbar { display: none; }
@@ -349,6 +358,7 @@
     /* Range slider */
     input[type="range"] {
       -webkit-appearance: none;
+      appearance: none;
       width: 100%;
       height: 4px;
       border-radius: 4px;
@@ -424,9 +434,10 @@
       outline: none;
       transition: border-color var(--transition), box-shadow var(--transition);
       -moz-appearance: textfield;
+      appearance: textfield;
     }
     input[type="number"]::-webkit-inner-spin-button,
-    input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
+    input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; appearance: none; }
     input[type="number"]:focus {
       border-color: var(--accent);
       box-shadow: 0 0 0 3px var(--accent-glow);
@@ -663,6 +674,7 @@
     .quiz-overlay {
       position: fixed; inset: 0; z-index: 500;
       background: rgba(0,0,0,0.6);
+      -webkit-backdrop-filter: blur(4px);
       backdrop-filter: blur(4px);
       display: flex; align-items: center; justify-content: center;
       padding: 16px;
@@ -1807,6 +1819,8 @@
     ::-webkit-scrollbar-track { background: var(--sb-track); border-radius: 4px; }
     ::-webkit-scrollbar-thumb { background: var(--sb-thumb); border-radius: 4px; border: 2px solid var(--sb-track); }
     ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.32); }
+    /* COMPAT: scrollbar-width/scrollbar-color (W3C standard) for Firefox 64+ / Chrome 121+.
+       ::-webkit-scrollbar above covers older Chrome/Safari. Both sets must coexist. */
     * { scrollbar-width: thin; scrollbar-color: var(--sb-thumb) var(--sb-track); }
 
     /* ─── Responsive tweaks ─────────────────────────────────── */
@@ -2039,7 +2053,7 @@
     .card-section-header .chart-tab { margin: 0; }
     .card-section-header .amort-strategy-tabs { margin: 0; }
     /* Clickable headers */
-    .card-section-header[onclick] { cursor: pointer; user-select: none; }
+    .card-section-header[onclick] { cursor: pointer; -webkit-user-select: none; user-select: none; }
     .card-section-header[onclick]:hover .card-title { color: var(--accent); }
     /* Section info badge ⓘ next to the toggle chevron */
     .sec-info {
@@ -2049,7 +2063,7 @@
       background: var(--surface2); border: 1px solid var(--border);
       font-size: 0.72rem; font-weight: 700;
       color: var(--text-muted);
-      cursor: help !important; user-select: none;
+      cursor: help !important; -webkit-user-select: none; user-select: none;
       transition: var(--transition); line-height: 1; opacity: 0.7;
     }
     .sec-info:hover { background: var(--accent-glow); border-color: var(--accent); color: var(--accent); opacity: 1; }
@@ -2374,7 +2388,7 @@
     .input-panel {
       border-right: 1px solid var(--border); padding: 18px 16px 24px;
       position: sticky; top: 52px; max-height: calc(100vh - 52px);
-      overflow-y: auto; scrollbar-width: thin;
+      overflow-y: auto; scrollbar-width: thin; /* COMPAT: Firefox; Chrome/Safari use ::-webkit-scrollbar */
     }
     .budget-card {
       background: var(--surface); border: 1.5px solid var(--accent-border);
@@ -2448,7 +2462,7 @@
     .matrix-context .mtx-ctx-val { font-size: 1.05rem; font-weight: 900; letter-spacing: -0.02em; color: var(--accent); font-variant-numeric: tabular-nums; white-space: nowrap; }
     .no-budget-hint { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: var(--radius-sm); background: var(--surface2); border: 1px dashed var(--border); font-size: 0.73rem; color: var(--text-muted); margin-bottom: 14px; }
     [data-theme="light"] .no-budget-hint { border-color: rgba(0,0,0,0.22); }
-    .matrix-scroll { overflow-x: auto; overflow-y: auto; border: 1px solid var(--border); border-radius: var(--radius-sm); max-height: calc(100vh - 320px); scrollbar-width: thin; }
+    .matrix-scroll { overflow-x: auto; overflow-y: auto; border: 1px solid var(--border); border-radius: var(--radius-sm); max-height: calc(100vh - 320px); scrollbar-width: thin; /* COMPAT: Firefox */ }
     .mtx { border-collapse: collapse; width: max-content; min-width: 100%; }
     .mtx th, .mtx td { border: 1px solid var(--border); }
     .mtx thead th { padding: 7px 10px; font-size: 0.65rem; font-weight: 700; text-align: center; background: var(--surface2); white-space: nowrap; position: sticky; top: 0; z-index: 3; color: var(--text-muted); }
@@ -2571,6 +2585,105 @@
       .home-wrap { padding: 32px 16px 48px; }
       .home-hero h1 { font-size: 1.6rem; }
     }
+
+    /* ── EMI Matrix — extracted from inline styles ────────────── */
+    .inp-sec-title--no-mb { margin-bottom: 0; }
+    .inp-label--mb6       { margin-bottom: 6px; }
+    #detail-bar-wrap      { display: none; }
+    .legend-hint          { font-size: 0.6rem; opacity: 0.55; margin-right: 4px; }
+
+    /* ── Prepay/Invest — extracted from inline styles ──────── */
+    .tenure-split-row     { display: flex; gap: 8px; margin-top: 8px; }
+    .tenure-split-col     { flex: 1; display: flex; align-items: center; gap: 4px; }
+    .number-input-wrap--flex1 { flex: 1; }
+    #inp-tenure-y         { padding-right: 36px; }
+    #inp-tenure-m         { padding-right: 40px; }
+    .section-header--flex { display: flex; align-items: center; justify-content: space-between; }
+    .sub-inp-stepup       { width: 50px; text-align: right; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 2px 6px; color: var(--text); font-size: 0.82rem; }
+    .stepper-col          { display: flex; flex-direction: column; gap: 1px; }
+    .stepper-btn--sm      { padding: 1px 5px; font-size: 0.6rem; line-height: 1.2; }
+    .sub-input-row--col   { flex-direction: column; align-items: stretch; gap: 6px; }
+    .flex-between         { display: flex; align-items: center; justify-content: space-between; }
+    .flex-gap4            { display: flex; gap: 4px; }
+    .hybrid-row           { display: flex; align-items: center; gap: 8px; }
+    .hybrid-label--inner  { font-size: 0.72rem; white-space: nowrap; flex-shrink: 0; display: flex; align-items: center; gap: 4px; }
+    .dot--prepay          { background: var(--prepay-color); }
+    .dot--invest          { background: var(--invest-color); }
+    .hl-bold              { font-weight: 800; }
+    .range--flex1         { flex: 1; }
+    #lv-hybrid            { display: none; }
+    .input-group--mb10    { margin-bottom: 10px; }
+    .db-body              { flex: 1; min-width: 0; }
+    .winner-badge--hidden { display: none; }
+    .info-tip--help       { cursor: help; }
+    .card--section        { margin-top: 16px; }
+    .toggle-label-hidden  { display: none; }
+    #breakdown-collapse-wrap { overflow: visible; }
+    .amort-section--mt    { margin-top: 16px; }
+    .qgv2-context--flush  { margin-top: 0; padding-top: 0; }
+    .scenario-icon--qual  { width: 34px; height: 34px; font-size: 1rem; flex-shrink: 0; }
+    .sensitivity-card     { margin-top: 16px; }
+
+    /* ── Eligibility — extracted from inline styles ─────────── */
+    .beta-badge {
+      background: linear-gradient(135deg, #e8a735, #f0c060);
+      color: #1a1a2e;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      vertical-align: middle;
+    }
+    .beta-badge--nav   { font-size: 0.65em; padding: 1px 6px; border-radius: 8px; margin-left: 2px; }
+    .beta-badge--card  { font-size: 0.5em; padding: 2px 8px; border-radius: 10px; font-weight: 800; letter-spacing: 0.06em; margin-left: 4px; }
+    .beta-badge--hero  { display: inline-block; font-size: 0.45em; font-weight: 800; padding: 3px 10px; border-radius: 20px; letter-spacing: 0.08em; margin-left: 8px; position: relative; top: -4px; }
+    .elig-disclaimer   { background: var(--surface2); border: 1px solid var(--color-warn, #e8a735); border-radius: var(--radius-sm); padding: 12px 16px; margin: 12px 0 4px; font-size: 0.78rem; line-height: 1.6; color: var(--text-muted); }
+    .elig-disclaimer strong { color: var(--color-warn, #e8a735); }
+    .elig-income-hint  { font-size: 0.72rem; color: var(--text-muted); margin-top: 4px; line-height: 1.4; }
+    .elig-unit-suffix  { font-size: 0.85rem; color: var(--text-muted); }
+    .elig-select       { width: 100%; padding: 10px 12px; border-radius: var(--radius-sm); background: var(--surface2); border: 1px solid var(--border); color: var(--text); font-family: var(--font); font-size: 0.85rem; }
+    .elig-chk-group    { display: flex; align-items: center; gap: 10px; }
+    .elig-chk          { width: 18px; height: 18px; accent-color: var(--accent); cursor: pointer; }
+    .elig-chk-label    { font-size: 0.85rem; font-weight: 500; cursor: pointer; }
+    .elig-headline     { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+    .elig-stat-box     { text-align: center; padding: 20px 12px; background: var(--surface2); border-radius: var(--radius-sm); border: 1px solid var(--border); }
+    .elig-stat-box .label-sm { margin-bottom: 6px; }
+    #elig-loan-val     { color: var(--accent); }
+    #elig-emi-val      { color: var(--accent2); }
+    #elig-tenure-val   { color: var(--text); }
+    #elig-down-val     { color: var(--accent3); }
+    .elig-section-wrap { margin-bottom: 20px; }
+    .elig-section-hdr  { margin-bottom: 8px; }
+    .elig-breakdown-hdr { margin-bottom: 10px; }
+    .elig-breakdown-table       { width: 100%; font-size: 0.82rem; border-collapse: collapse; }
+    .elig-breakdown-table td    { padding: 8px 0; border-bottom: 1px solid var(--border); }
+    .elig-breakdown-table tr:last-child td { border-bottom: none; }
+    .elig-td           { color: var(--text-muted); }
+    .elig-td-val       { text-align: right; font-weight: 600; }
+    .elig-td-val--bold { font-weight: 700; }
+    .elig-td-val--interest { color: var(--color-interest); }
+    .elig-warnings     { display: none; }
+    .elig-warnings-list { font-size: 0.78rem; line-height: 1.7; color: var(--color-warn); }
+    .elig-notes-list   { font-size: 0.75rem; line-height: 1.7; color: var(--text-muted); }
+    .elig-sources-list { font-size: 0.72rem; line-height: 1.9; color: var(--text-muted); }
+    .elig-crosslinks   { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; }
+    .elig-crosslink-sub { font-size: 0.7em; opacity: 0.8; }
+    .elig-btn-accent2  { background: var(--accent2); }
+    .elig-toast        { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: var(--surface2); color: var(--text); border: 1px solid var(--accent); border-radius: var(--radius-sm); padding: 12px 20px; font-size: 0.82rem; line-height: 1.5; z-index: 9999; max-width: 560px; box-shadow: 0 4px 20px rgba(0,0,0,0.25); opacity: 0; transition: opacity 0.3s; pointer-events: none; }
+    .footer-version    { opacity: 0.55; }
+
+    /* ── Eligibility mobile breakpoints ────────────────────── */
+    @media (max-width: 640px) {
+      .elig-headline { grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+      .elig-stat-box { padding: 14px 8px; }
+      .elig-stat-box .value-lg { font-size: 1.1rem; }
+      .elig-breakdown-table { font-size: 0.75rem; }
+      .elig-breakdown-table td { padding: 6px 0; }
+      .elig-td .info-tip { font-size: 0.7rem; }
+    }
+    @media (max-width: 420px) {
+      .elig-headline { grid-template-columns: 1fr; gap: 8px; }
+      .elig-stat-box { padding: 12px 10px; }
+      .elig-breakdown-table { font-size: 0.72rem; }
+    }
   </style>
 </head>
 <body>
@@ -2582,9 +2695,9 @@
     </div>
     <div class="suite-links" id="suite-links">
       <button class="suite-link" onclick="showView('home')">⬡ Home</button>
+      <button class="suite-link" id="nav-eligibility" onclick="showView('eligibility')">📋 Loan Eligibility <span class="beta-badge beta-badge--nav">BETA</span></button>
       <button class="suite-link" id="nav-emi" onclick="showView('emi')">📊 EMI Matrix</button>
       <button class="suite-link" id="nav-prepay" onclick="showView('prepay')">🏠 Prepay · Invest · Hybrid</button>
-      <span class="suite-link soon">📋 Loan Eligibility <span class="soon-chip">Soon</span></span>
     </div>
     <div class="suite-nav-right">
       <select id="ribbon-currency" class="nav-ccy-select" title="Select currency"></select>
@@ -2604,6 +2717,12 @@
       <p>Your complete toolkit for smarter mortgage decisions — from sizing the loan to optimising what you do with extra cash, post-tax and inflation-adjusted.</p>
     </div>
     <div class="home-grid">
+      <div class="tool-card" onclick="showView('eligibility')">
+        <div class="tool-card-icon">📋</div>
+        <h2>Loan Eligibility <span class="beta-badge beta-badge--card">BETA</span></h2>
+        <p>Check what loan amount you qualify for based on income, expenses and country-specific regulations — DTI, LTV, age limits and stress tests.</p>
+        <button class="tool-card-cta" onclick="event.stopPropagation();showView('eligibility')">Check Eligibility →</button>
+      </div>
       <div class="tool-card" onclick="showView('emi')">
         <div class="tool-card-icon">📊</div>
         <h2>EMI Matrix</h2>
@@ -2615,12 +2734,6 @@
         <h2>Prepay · Invest · Hybrid</h2>
         <p>More than a calculator — a decision framework. Crunch the numbers across 10 analysis views, then layer on psychology and life context through a structured quiz to find the holistic strategy that's actually right for you.</p>
         <button class="tool-card-cta" onclick="event.stopPropagation();showView('prepay')">Open Strategy Simulator →</button>
-      </div>
-      <div class="tool-card tool-card-soon">
-        <div class="tool-card-icon">📋</div>
-        <h2>Loan Eligibility</h2>
-        <p>Check what loan amount you qualify for based on income, expenses and your target EMI-to-income ratio.</p>
-        <span class="tool-card-soon-badge">Coming Soon</span>
       </div>
     </div>
   </div>
@@ -2636,9 +2749,286 @@
         Instagram
       </a>
     </div>
-    <div class="footer-disclaimer">Estimates only &mdash; not financial advice. Consult a qualified advisor. &nbsp;&middot;&nbsp; <span style="opacity:0.55;">v2.2</span></div>
+    <div class="footer-disclaimer">Estimates only &mdash; not financial advice. Consult a qualified advisor. &nbsp;&middot;&nbsp; <span class="footer-version">v2.2</span></div>
   </footer>
 </section>
+
+<!-- ══════════════════════════════════════════════════════════
+     LOAN ELIGIBILITY VIEW
+════════════════════════════════════════════════════════════ -->
+<section id="view-eligibility" class="tool-view">
+<div class="main-container">
+  <div class="hero anim">
+    <h1>How Much <span class="gradient-text">Can You Borrow?</span> <span class="beta-badge beta-badge--hero">BETA</span></h1>
+    <p class="hero-question">Country-specific regulatory limits — DTI / DSTI, LTV, tenure caps, age constraints and stress-test buffers — applied automatically based on your selected currency.</p>
+    <div class="elig-disclaimer">
+      <strong>⚠ Beta Tool</strong> &mdash; Loan eligibility calculations are based on publicly available regulatory guidelines and may not reflect every bank’s internal policies, recent rule changes, or your specific financial circumstances. <strong>Always verify with your bank or a licensed mortgage advisor before making financial decisions.</strong> Results from the EMI Matrix and Strategy Simulator tools are unaffected by this module.
+    </div>
+    <div class="hero-pills">
+      <span class="hero-pill" id="elig-country-pill">🌍 —</span>
+      <span class="hero-pill" id="elig-regulator-pill">🏛 —</span>
+      <span class="hero-pill" id="elig-updated-pill">📅 —</span>
+    </div>
+  </div>
+
+  <div class="calc-grid">
+    <!-- ── LEFT: Inputs ──────────────────────────────────── -->
+    <div class="card anim anim-d1">
+      <div class="card-title">⚙ Your Profile</div>
+
+      <!-- Gross / Net Monthly Income (dynamic per country) -->
+      <div class="input-group">
+        <div class="input-label">
+          <span id="elig-income-label">Monthly Income</span>
+          <span class="live-value" id="elig-lv-income"></span>
+        </div>
+        <div class="number-row">
+          <span class="cur-sym inp-cur-prefix elig-cur-prefix"></span>
+          <div class="number-input-wrap">
+            <input type="number" id="elig-income" min="0" step="100" value="10000" class="number-input" />
+          </div>
+          <div class="stepper">
+            <button onclick="step('elig-income', 1000, 1)">▲</button>
+            <button onclick="step('elig-income', 1000, -1)">▼</button>
+          </div>
+        </div>
+        <div id="elig-income-hint" class="elig-income-hint"></div>
+      </div>
+
+      <!-- Existing Monthly Obligations -->
+      <div class="input-group">
+        <div class="input-label">
+          <span>Existing Monthly Debt (EMIs / Obligations)</span>
+          <span class="live-value" id="elig-lv-debts"></span>
+        </div>
+        <div class="number-row">
+          <span class="cur-sym inp-cur-prefix elig-cur-prefix"></span>
+          <div class="number-input-wrap">
+            <input type="number" id="elig-debts" min="0" step="50" value="0" class="number-input" />
+          </div>
+          <div class="stepper">
+            <button onclick="step('elig-debts', 500, 1)">▲</button>
+            <button onclick="step('elig-debts', 500, -1)">▼</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Property Value -->
+      <div class="input-group">
+        <div class="input-label">
+          <span>Property Value</span>
+          <span class="live-value" id="elig-lv-property"></span>
+        </div>
+        <div class="number-row">
+          <span class="cur-sym inp-cur-prefix elig-cur-prefix"></span>
+          <div class="number-input-wrap">
+            <input type="number" id="elig-property" min="0" step="1000" value="500000" class="number-input" />
+          </div>
+          <div class="stepper">
+            <button onclick="step('elig-property', 10000, 1)">▲</button>
+            <button onclick="step('elig-property', 10000, -1)">▼</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Own Contribution / Down Payment -->
+      <div class="input-group">
+        <div class="input-label">
+          <span>Own Contribution (Down Payment)</span>
+          <span class="live-value" id="elig-lv-contribution"></span>
+        </div>
+        <div class="number-row">
+          <span class="cur-sym inp-cur-prefix elig-cur-prefix"></span>
+          <div class="number-input-wrap">
+            <input type="number" id="elig-contribution" min="0" step="1000" value="100000" class="number-input" />
+          </div>
+          <div class="stepper">
+            <button onclick="step('elig-contribution', 10000, 1)">▲</button>
+            <button onclick="step('elig-contribution', 10000, -1)">▼</button>
+          </div>
+        </div>
+        <div id="elig-contribution-hint" class="elig-income-hint"></div>
+      </div>
+
+      <!-- Interest Rate -->
+      <div class="input-group">
+        <div class="input-label">
+          <span>Expected Interest Rate</span>
+          <span class="live-value" id="elig-lv-rate"></span>
+        </div>
+        <div class="number-row">
+          <div class="number-input-wrap">
+            <input type="number" id="elig-rate" min="0" max="40" step="0.1" value="7.5" class="number-input" />
+          </div>
+          <span class="cur-sym elig-unit-suffix">%</span>
+          <div class="stepper">
+            <button onclick="step('elig-rate', 0.1, 1)">▲</button>
+            <button onclick="step('elig-rate', 0.1, -1)">▼</button>
+          </div>
+        </div>
+        <input type="range" id="elig-sl-rate" min="0.5" max="25" step="0.1" value="7.5" />
+      </div>
+
+      <!-- Desired Tenure -->
+      <div class="input-group">
+        <div class="input-label">
+          <span>Desired Tenure (years)</span>
+          <span class="live-value" id="elig-lv-tenure"></span>
+        </div>
+        <div class="number-row">
+          <div class="number-input-wrap">
+            <input type="number" id="elig-tenure" min="1" max="50" step="1" value="25" class="number-input" />
+          </div>
+          <span class="cur-sym elig-unit-suffix">yr</span>
+          <div class="stepper">
+            <button onclick="step('elig-tenure', 1, 1)">▲</button>
+            <button onclick="step('elig-tenure', 1, -1)">▼</button>
+          </div>
+        </div>
+        <input type="range" id="elig-sl-tenure" min="1" max="50" step="1" value="25" />
+      </div>
+
+      <!-- Age -->
+      <div class="input-group">
+        <div class="input-label">
+          <span>Your Age</span>
+          <span class="live-value" id="elig-lv-age"></span>
+        </div>
+        <div class="number-row">
+          <div class="number-input-wrap">
+            <input type="number" id="elig-age" min="18" max="80" step="1" value="30" class="number-input" />
+          </div>
+          <span class="cur-sym elig-unit-suffix">yr</span>
+          <div class="stepper">
+            <button onclick="step('elig-age', 1, 1)">▲</button>
+            <button onclick="step('elig-age', 1, -1)">▼</button>
+          </div>
+        </div>
+        <input type="range" id="elig-sl-age" min="18" max="75" step="1" value="30" />
+      </div>
+
+      <!-- Employment Type -->
+      <div class="input-group">
+        <div class="input-label"><span>Employment Type</span></div>
+        <select id="elig-employment" class="number-input elig-select">
+          <option value="salaried">Salaried / Employed</option>
+          <option value="self-employed">Self-Employed / Business</option>
+        </select>
+      </div>
+
+      <!-- First Home -->
+      <div class="input-group elig-chk-group">
+        <input type="checkbox" id="elig-first-home" checked class="elig-chk" />
+        <label for="elig-first-home" class="elig-chk-label">First home purchase</label>
+      </div>
+
+    </div><!-- /card inputs -->
+
+    <!-- ── RIGHT: Results ────────────────────────────────── -->
+    <div class="card anim anim-d2" id="elig-results-card">
+      <div class="card-title">📋 Eligibility Results</div>
+
+      <!-- Headline numbers -->
+      <div id="elig-headline" class="elig-headline">
+        <div class="elig-stat-box">
+          <div class="label-sm">Eligible Loan</div>
+          <div class="value-lg" id="elig-loan-val">—</div>
+        </div>
+        <div class="elig-stat-box">
+          <div class="label-sm">Max EMI (from income)</div>
+          <div class="value-lg" id="elig-emi-val">—</div>
+        </div>
+        <div class="elig-stat-box">
+          <div class="label-sm">Effective Tenure</div>
+          <div class="value-lg" id="elig-tenure-val">—</div>
+        </div>
+        <div class="elig-stat-box">
+          <div class="label-sm">Min Down Payment</div>
+          <div class="value-lg" id="elig-down-val">—</div>
+        </div>
+      </div>
+
+      <!-- Breakdown table -->
+      <div class="elig-section-wrap">
+        <div class="label-sm elig-breakdown-hdr">Constraint Breakdown</div>
+        <table class="elig-breakdown-table">
+          <tbody id="elig-breakdown-tbody">
+            <tr>
+              <td class="elig-td">Max Loan (Income / DSTI) <span class="info-tip info-tip--rich">&#9432;<span class="tip-popup"><span class="tip-sec-body">The largest loan your income can support. The bank calculates how much EMI you can afford after existing debts, using the regulatory DSTI (Debt-Service-To-Income) cap.</span><span class="tip-sec-row"><span class="tip-lbl">Formula:</span> Max EMI = Income &times; DSTI Cap &minus; Existing Debts &rarr; convert to loan principal at your rate &amp; tenure.</span><span class="tip-sec-row"><span class="tip-lbl">Answers:</span> How much can I borrow based on what I earn?</span><span class="tip-sec-row"><span class="tip-lbl">Good for:</span> Anyone whose salary is the main constraint.</span></span></span></td>
+              <td class="elig-td-val" id="elig-bd-dsti">—</td>
+            </tr>
+            <tr>
+              <td class="elig-td">Max Loan (LTV) <span class="info-tip info-tip--rich">&#9432;<span class="tip-popup"><span class="tip-sec-body">The largest loan the property value allows. Regulators cap the percentage of property value a bank can finance (LTV &mdash; Loan-to-Value).</span><span class="tip-sec-row"><span class="tip-lbl">Formula:</span> Max Loan = Property Value &times; LTV Cap (e.g. 90% &rarr; 0.90).</span><span class="tip-sec-row"><span class="tip-lbl">Answers:</span> How much can I borrow against this property?</span><span class="tip-sec-row"><span class="tip-lbl">Good for:</span> Buyers of expensive property relative to income.</span></span></span></td>
+              <td class="elig-td-val" id="elig-bd-ltv">—</td>
+            </tr>
+            <tr>
+              <td class="elig-td">Requested Loan <span class="info-tip info-tip--rich">&#9432;<span class="tip-popup"><span class="tip-sec-body">The loan you actually need after subtracting your own contribution (down payment) from the property price.</span><span class="tip-sec-row"><span class="tip-lbl">Formula:</span> Requested Loan = Property Value &minus; Own Contribution.</span><span class="tip-sec-row"><span class="tip-lbl">Answers:</span> How much financing do I actually need?</span><span class="tip-sec-row"><span class="tip-lbl">Good for:</span> Everyone &mdash; if your contribution is large, this may be the binding limit.</span></span></span></td>
+              <td class="elig-td-val" id="elig-bd-requested">—</td>
+            </tr>
+            <tr>
+              <td class="elig-td">Binding Constraint <span class="info-tip info-tip--rich">&#9432;<span class="tip-popup"><span class="tip-sec-body">Which of the three limits above is the tightest? Your eligible loan equals the smallest of (a) Income/DSTI, (b) LTV, and (c) Requested Loan. The binding one is shown here.</span><span class="tip-sec-row"><span class="tip-lbl">Formula:</span> Eligible Loan = min(Income limit, LTV limit, Requested Loan).</span><span class="tip-sec-row"><span class="tip-lbl">Answers:</span> What&rsquo;s actually holding me back?</span><span class="tip-sec-row"><span class="tip-lbl">Good for:</span> Knowing which lever to pull &mdash; earn more, contribute more, or choose a cheaper property.</span></span></span></td>
+              <td class="elig-td-val elig-td-val--bold" id="elig-bd-binding">—</td>
+            </tr>
+            <tr>
+              <td class="elig-td">DSTI Cap Used <span class="info-tip info-tip--rich">&#9432;<span class="tip-popup"><span class="tip-sec-body">The maximum share of monthly income that regulators allow to go toward all loan repayments (including existing debts). Varies by country and sometimes by income level.</span><span class="tip-sec-row"><span class="tip-lbl">Example:</span> 50% means at most half your monthly income can service debts.</span><span class="tip-sec-row"><span class="tip-lbl">Answers:</span> What percentage ceiling is the bank applying to me?</span><span class="tip-sec-row"><span class="tip-lbl">Good for:</span> Understanding regulatory headroom.</span></span></span></td>
+              <td class="elig-td-val" id="elig-bd-dsticap">—</td>
+            </tr>
+            <tr>
+              <td class="elig-td">Effective LTV Cap <span class="info-tip info-tip--rich">&#9432;<span class="tip-popup"><span class="tip-sec-body">The maximum loan-to-value ratio the bank will allow. Can differ for first vs. second homes, property price tiers, or employment type.</span><span class="tip-sec-row"><span class="tip-lbl">Example:</span> 90% LTV means you need at least 10% down payment.</span><span class="tip-sec-row"><span class="tip-lbl">Answers:</span> What&rsquo;s the minimum down payment percentage I must bring?</span><span class="tip-sec-row"><span class="tip-lbl">Good for:</span> Planning how much cash you need upfront.</span></span></span></td>
+              <td class="elig-td-val" id="elig-bd-ltvcap">—</td>
+            </tr>
+            <tr>
+              <td class="elig-td">Actual DSTI <span class="info-tip info-tip--rich">&#9432;<span class="tip-popup"><span class="tip-sec-body">Your real debt-to-income ratio if you take the eligible loan. Compares your actual total EMI burden (new loan + existing debts) against your income.</span><span class="tip-sec-row"><span class="tip-lbl">Formula:</span> Actual DSTI = (New EMI + Existing Debts) &divide; Monthly Income.</span><span class="tip-sec-row"><span class="tip-lbl">Answers:</span> How stretched will my budget actually be?</span><span class="tip-sec-row"><span class="tip-lbl">Good for:</span> A reality check &mdash; lower is more comfortable.</span></span></span></td>
+              <td class="elig-td-val" id="elig-bd-actualdsti">—</td>
+            </tr>
+            <tr>
+              <td class="elig-td">Actual LTV <span class="info-tip info-tip--rich">&#9432;<span class="tip-popup"><span class="tip-sec-body">The real loan-to-value ratio for the eligible loan amount vs. property value. If your binding constraint is income or contribution, this will be below the LTV cap.</span><span class="tip-sec-row"><span class="tip-lbl">Formula:</span> Actual LTV = Eligible Loan &divide; Property Value.</span><span class="tip-sec-row"><span class="tip-lbl">Answers:</span> What fraction of the property am I actually financing?</span><span class="tip-sec-row"><span class="tip-lbl">Good for:</span> Seeing how much equity you start with.</span></span></span></td>
+              <td class="elig-td-val" id="elig-bd-actualltv">—</td>
+            </tr>
+            <tr>
+              <td class="elig-td">Total Interest <span class="info-tip info-tip--rich">&#9432;<span class="tip-popup"><span class="tip-sec-body">The total interest you&rsquo;d pay over the full loan tenure if you make only regular EMI payments (no prepayments).</span><span class="tip-sec-row"><span class="tip-lbl">Formula:</span> Total Interest = (Monthly EMI &times; Number of Months) &minus; Loan Principal.</span><span class="tip-sec-row"><span class="tip-lbl">Answers:</span> How much does borrowing actually cost me?</span><span class="tip-sec-row"><span class="tip-lbl">Good for:</span> Gauging the true cost of the mortgage.</span></span></span></td>
+              <td class="elig-td-val elig-td-val--interest" id="elig-bd-interest">—</td>
+            </tr>
+            <tr>
+              <td class="elig-td">Total Payment <span class="info-tip info-tip--rich">&#9432;<span class="tip-popup"><span class="tip-sec-body">Everything you&rsquo;d repay to the bank &mdash; the original loan plus all interest over the full tenure.</span><span class="tip-sec-row"><span class="tip-lbl">Formula:</span> Total Payment = Loan Principal + Total Interest.</span><span class="tip-sec-row"><span class="tip-lbl">Answers:</span> What&rsquo;s the all-in price tag of this mortgage?</span><span class="tip-sec-row"><span class="tip-lbl">Good for:</span> Big-picture budgeting and comparing loan offers.</span></span></span></td>
+              <td class="elig-td-val elig-td-val--bold" id="elig-bd-total">—</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Warnings / advisory -->
+      <div id="elig-warnings" class="elig-warnings elig-section-wrap">
+        <div class="label-sm elig-section-hdr">⚠ Advisories</div>
+        <div id="elig-warnings-list" class="elig-warnings-list"></div>
+      </div>
+
+      <!-- Regulation notes -->
+      <div id="elig-notes" class="elig-section-wrap">
+        <div class="label-sm elig-section-hdr">📖 Regulatory Notes</div>
+        <div id="elig-notes-list" class="elig-notes-list"></div>
+      </div>
+
+      <!-- Source links for cross-validation -->
+      <div id="elig-sources" class="elig-section-wrap">
+        <div class="label-sm elig-section-hdr">🔗 Sources &amp; Cross-Validation</div>
+        <div id="elig-sources-list" class="elig-sources-list"></div>
+      </div>
+
+      <!-- Cross-link buttons -->
+      <div class="elig-crosslinks">
+          <button class="tool-card-cta" id="elig-to-emi" onclick="openEmiFromEligibility()" title="Pre-fills EMI Matrix with your eligible loan amount and max affordable EMI as budget">
+            📊 Explore EMI Matrix → <span class="elig-crosslink-sub">(loan + budget pre-filled)</span>
+          </button>
+          <button class="tool-card-cta elig-btn-accent2" id="elig-to-prepay" onclick="openPrepayFromEligibility()" title="Pre-fills Strategy Simulator with eligible loan, rate & tenure">
+            🏠 Explore Strategy Simulator →
+          </button>
+      </div>
+
+    </div><!-- /card results -->
+  </div><!-- /calc-grid -->
+</div><!-- /main-container -->
+</section><!-- /view-eligibility -->
 
 <!-- ══════════════════════════════════════════════════════════
      EMI MATRIX VIEW
@@ -2702,10 +3092,10 @@
       </div>
       <div class="inp-sec config-card">
         <div class="inp-sec-title-row">
-          <div class="inp-sec-title" style="margin-bottom:0">🎨 Comfort Threshold</div>
+          <div class="inp-sec-title inp-sec-title--no-mb">🎨 Comfort Threshold</div>
           <div class="inp-live-num" id="lv-comfort-num">—</div>
         </div>
-        <div class="inp-label" style="margin-bottom:6px"><span>Green if EMI ≤ budget ×</span><span class="inp-live" id="lv-comfort">80%</span></div>
+        <div class="inp-label inp-label--mb6"><span>Green if EMI ≤ budget ×</span><span class="inp-live" id="lv-comfort">80%</span></div>
         <div class="sl-row">
           <input type="range" id="sl-comfort" min="30" max="100" step="5" value="80" oninput="onComfort(this.value)" />
           <input type="number" step="any" min="0" max="100" id="nf-comfort" class="num-inp" value="80" oninput="onComfort(this.value)" />
@@ -2735,7 +3125,7 @@
           <button class="detail-close" id="detail-close-btn" onclick="closeDetail()">✕</button>
         </div>
         <div class="detail-grid" id="detail-grid"></div>
-        <div id="detail-bar-wrap" style="display:none">
+        <div id="detail-bar-wrap">
           <div class="budget-bar-label" id="detail-bar-label"></div>
           <div class="budget-bar"><div class="budget-bar-fill" id="detail-bar-fill"></div></div>
         </div>
@@ -2743,7 +3133,7 @@
       </div>
       <div class="matrix-panel anim anim-d3">
         <div class="legend-bar" id="legend-bar">
-          <div class="legend-item" style="font-size:0.6rem;opacity:0.55;margin-right:4px;">Tenure ↓ · Rate →</div>
+          <div class="legend-item legend-hint">Tenure ↓ · Rate →</div>
           <div class="legend-item"><div class="legend-dot ok"></div> Comfortable</div>
           <div class="legend-item"><div class="legend-dot tgt"></div> Tight</div>
           <div class="legend-item"><div class="legend-dot ovr"></div> Over budget</div>
@@ -2767,7 +3157,7 @@
           Instagram
         </a>
       </div>
-      <div class="footer-disclaimer">Estimates only &mdash; not financial advice. Consult a qualified advisor before making mortgage decisions. &nbsp;&middot;&nbsp; <span style="opacity:0.55;">v2.2</span></div>
+      <div class="footer-disclaimer">Estimates only &mdash; not financial advice. Consult a qualified advisor before making mortgage decisions. &nbsp;&middot;&nbsp; <span class="footer-version">v2.2</span></div>
   </footer>
 </section>
 
@@ -2839,10 +3229,10 @@
             <span class="live-value" id="lv-tenure">25y 0m</span>
           </div>
           <input type="range" id="sl-tenure" min="60" max="480" step="1" value="300" />
-          <div style="display:flex;gap:8px;margin-top:8px;">
-            <div style="flex:1;display:flex;align-items:center;gap:4px;">
-              <div class="number-input-wrap" style="flex:1;">
-                <input type="number" id="inp-tenure-y" min="0" max="40" step="1" value="25" style="padding-right:36px;" />
+          <div class="tenure-split-row">
+            <div class="tenure-split-col">
+              <div class="number-input-wrap number-input-wrap--flex1">
+                <input type="number" id="inp-tenure-y" min="0" max="40" step="1" value="25" />
                 <span class="suffix">y</span>
               </div>
               <div class="stepper">
@@ -2850,9 +3240,9 @@
                 <button onclick="stepTenure('y',-1)">▼</button>
               </div>
             </div>
-            <div style="flex:1;display:flex;align-items:center;gap:4px;">
-              <div class="number-input-wrap" style="flex:1;">
-                <input type="number" id="inp-tenure-m" min="0" max="11" step="1" value="0" style="padding-right:40px;" />
+            <div class="tenure-split-col">
+              <div class="number-input-wrap number-input-wrap--flex1">
+                <input type="number" id="inp-tenure-m" min="0" max="11" step="1" value="0" />
                 <span class="suffix">m</span>
               </div>
               <div class="stepper">
@@ -2872,7 +3262,7 @@
 
       <!-- ── OPTIMIZATION TECHNIQUES ── -->
       <div class="input-section optim-sec">
-        <div class="section-header" style="display:flex;align-items:center;justify-content:space-between;">
+        <div class="section-header section-header--flex">
           <span>🚀 Optimization Techniques</span>
           <span class="info-tip info-tip--rich">ⓘ<span class="tip-popup"><span class="tip-main">Best explored one at a time — set Extra Cash, Extra EMI/year, or EMI Hike % independently to see what each lever does. Combine them once you’ve got a feel for each.</span><span class="tip-warn">⚠️ <strong>Simulate consciously:</strong> it’s unlikely any real user can employ all levers simultaneously. If your extra monthly cash is already stepping up year-on-year, your EMI is also stepping up, and you’re unlocking additional EMIs — those budgets compete. Turning all three to max gives you a theoretical ceiling, not a realistic plan.</span></span></span>
         </div>
@@ -2899,29 +3289,29 @@
             <div class="sub-input-row">
               <span class="sub-input-label">📈 Annual step-up %</span>
               <input type="number" id="inp-extra-stepup" min="0" max="50" step="any" value="0"
-                style="width:50px;text-align:right;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:2px 6px;color:var(--text);font-size:0.82rem;" />
-              <div style="display:flex;flex-direction:column;gap:1px;">
-                <button class="stepper-btn" style="padding:1px 5px;font-size:0.6rem;line-height:1.2;" onclick="step('inp-extra-stepup', 0.5, 1)">▲</button>
-                <button class="stepper-btn" style="padding:1px 5px;font-size:0.6rem;line-height:1.2;" onclick="step('inp-extra-stepup', 0.5, -1)">▼</button>
+                class="sub-inp-stepup" />
+              <div class="stepper-col">
+                <button class="stepper-btn stepper-btn--sm" onclick="step('inp-extra-stepup', 0.5, 1)">▲</button>
+                <button class="stepper-btn stepper-btn--sm" onclick="step('inp-extra-stepup', 0.5, -1)">▼</button>
               </div>
               <span class="sub-live-val" id="lv-extra-stepup">off</span>
             </div>
-            <div class="sub-input-row" style="flex-direction:column;align-items:stretch;gap:6px;">
+            <div class="sub-input-row sub-input-row--col">
               <!-- row 1: label + stepper -->
-              <div style="display:flex;align-items:center;justify-content:space-between;">
+              <div class="flex-between">
                 <span class="sub-input-label">⚖️ Hybrid Split</span>
-                <div style="display:flex;gap:4px;">
+                <div class="flex-gap4">
                   <button class="stepper-btn" title="More invest (−5%)" onclick="stepHybrid(-5)">◀</button>
                   <button class="stepper-btn" title="More prepay (+5%)" onclick="stepHybrid(5)">▶</button>
                 </div>
               </div>
               <!-- row 2: Prepay% — slider — Invest% -->
-              <div style="display:flex;align-items:center;gap:8px;">
-                <span class="hybrid-label clr-prepay" style="font-size:0.72rem;white-space:nowrap;flex-shrink:0;display:flex;align-items:center;gap:4px;"><span class="dot" style="background:var(--prepay-color)"></span>Prepay <span id="hl-prepay" style="font-weight:800;">60%</span></span>
-                <input type="range" class="no-fill" id="sl-hybrid" min="0" max="100" step="5" value="60" style="flex:1;" />
-                <span class="hybrid-label clr-invest" style="font-size:0.72rem;white-space:nowrap;flex-shrink:0;display:flex;align-items:center;gap:4px;"><span id="hl-invest" style="font-weight:800;">40%</span> Invest <span class="dot" style="background:var(--invest-color)"></span></span>
+              <div class="hybrid-row">
+                <span class="hybrid-label clr-prepay hybrid-label--inner"><span class="dot dot--prepay"></span>Prepay <span id="hl-prepay" class="hl-bold">60%</span></span>
+                <input type="range" class="no-fill range--flex1" id="sl-hybrid" min="0" max="100" step="5" value="60" />
+                <span class="hybrid-label clr-invest hybrid-label--inner"><span id="hl-invest" class="hl-bold">40%</span> Invest <span class="dot dot--invest"></span></span>
               </div>
-              <span id="lv-hybrid" style="display:none"></span>
+              <span id="lv-hybrid" class="toggle-label-hidden"></span>
             </div>
           </div>
 
@@ -2942,7 +3332,7 @@
             </div>
             <div class="sub-input-row">
               <span class="sub-input-label">🗓 Apply in month</span>
-              <input type="range" class="no-fill" id="sl-extra-emis-month" min="1" max="12" step="1" value="12" style="flex:1;" />
+              <input type="range" class="no-fill range--flex1" id="sl-extra-emis-month" min="1" max="12" step="1" value="12" />
               <span class="sub-live-val" id="lv-extra-emis-month">12</span>
             </div>
           </div>
@@ -3000,7 +3390,7 @@
           </div>
         </div>
 
-        <div class="input-group" style="margin-bottom:10px;">
+        <div class="input-group input-group--mb10">
           <div class="input-label">
             <span>Tax on Investment Returns</span>
             <span class="live-value" id="lv-tax"></span>
@@ -3024,7 +3414,7 @@
       <!-- Decision Banner -->
       <div class="decision-banner anim anim-d2" id="decision-banner">
         <div class="db-icon" id="db-icon">🤔</div>
-        <div style="flex:1;min-width:0;">
+        <div class="db-body">
           <div class="db-title">Recommended Strategy</div>
           <div class="db-strategy" id="db-strategy">—</div>
           <div class="db-reason" id="db-reason">Adjust your inputs to see a recommendation.</div>
@@ -3056,12 +3446,12 @@
             <div class="scenario-name">
               <div class="scenario-icon prepay-bg">🏠</div> Prepay
             </div>
-            <span class="winner-badge" id="wb-prepay" style="display:none">Best</span>
+            <span class="winner-badge winner-badge--hidden" id="wb-prepay">Best</span>
           </div>
           <div class="scenario-metric">
             <div class="label-sm">Nominal Net Worth · Post-Tax</div>
             <div class="mval" id="sm-prepay-nw">—</div>
-            <div class="real-nw"><span class="info-tip" data-tip="Nominal Net Worth discounted by inflation over the full loan tenure — what that future sum is worth in today's purchasing power." style="cursor:help;">Present Value ⓘ</span> <span id="sm-prepay-pv">—</span></div>
+            <div class="real-nw"><span class="info-tip info-tip--help" data-tip="Nominal Net Worth discounted by inflation over the full loan tenure — what that future sum is worth in today's purchasing power.">Present Value ⓘ</span> <span id="sm-prepay-pv">—</span></div>
           </div>
           <div class="scenario-stats">
             <div class="sstat">
@@ -3089,12 +3479,12 @@
             <div class="scenario-name">
               <div class="scenario-icon invest-bg">📈</div> Invest
             </div>
-            <span class="winner-badge" id="wb-invest" style="display:none">Best</span>
+            <span class="winner-badge winner-badge--hidden" id="wb-invest">Best</span>
           </div>
           <div class="scenario-metric">
             <div class="label-sm">Nominal Net Worth · Post-Tax</div>
             <div class="mval" id="sm-invest-nw">—</div>
-            <div class="real-nw"><span class="info-tip" data-tip="Nominal Net Worth discounted by inflation over the full loan tenure — what that future sum is worth in today's purchasing power." style="cursor:help;">Present Value ⓘ</span> <span id="sm-invest-pv">—</span></div>
+            <div class="real-nw"><span class="info-tip info-tip--help" data-tip="Nominal Net Worth discounted by inflation over the full loan tenure — what that future sum is worth in today's purchasing power.">Present Value ⓘ</span> <span id="sm-invest-pv">—</span></div>
           </div>
           <div class="scenario-stats">
             <div class="sstat">
@@ -3122,12 +3512,12 @@
             <div class="scenario-name">
               <div class="scenario-icon hybrid-bg">⚖️</div> Hybrid
             </div>
-            <span class="winner-badge" id="wb-hybrid" style="display:none">Best</span>
+            <span class="winner-badge winner-badge--hidden" id="wb-hybrid">Best</span>
           </div>
           <div class="scenario-metric">
             <div class="label-sm">Nominal Net Worth · Post-Tax</div>
             <div class="mval" id="sm-hybrid-nw">—</div>
-            <div class="real-nw"><span class="info-tip" data-tip="Nominal Net Worth discounted by inflation over the full loan tenure — what that future sum is worth in today's purchasing power." style="cursor:help;">Present Value ⓘ</span> <span id="sm-hybrid-pv">—</span></div>
+            <div class="real-nw"><span class="info-tip info-tip--help" data-tip="Nominal Net Worth discounted by inflation over the full loan tenure — what that future sum is worth in today's purchasing power.">Present Value ⓘ</span> <span id="sm-hybrid-pv">—</span></div>
           </div>
           <div class="scenario-stats">
             <div class="sstat">
@@ -3175,13 +3565,13 @@
       </div>
 
       <!-- Interactive FV Calculator -->
-      <div class="card" style="margin-top:16px;" id="sec-fvcalc">
+      <div class="card card--section" id="sec-fvcalc">
         <div class="card-section-header" onclick="handleHeaderClick(event,'fvcalc-collapse-wrap','fvcalc-toggle-btn','Show FV calculator','Hide FV calculator')">
           <div class="card-title">🎯 Interactive FV Calculator</div>
           <div class="header-controls"></div>
           <span class="sec-info info-tip info-tip--rich">&#9432;<span class="tip-popup"><span class="tip-sec-body">Explore how different CAGR assumptions change your investment portfolio&rsquo;s future value.</span><span class="tip-sec-row"><span class="tip-lbl">Answers:</span> What annual return do I need to beat prepaying?</span><span class="tip-sec-row"><span class="tip-lbl">Good for:</span> Stress-testing return expectations before committing.</span></span></span>
           <button class="amort-toggle" id="fvcalc-toggle-btn" onclick="toggleSection('fvcalc-collapse-wrap','fvcalc-toggle-btn','Show FV calculator','Hide FV calculator')">
-            <span style="display:none">Show FV calculator</span>
+            <span class="toggle-label-hidden">Show FV calculator</span>
             <span class="chevron">▼</span>
           </button>
         </div>
@@ -3191,17 +3581,17 @@
       </div>
 
       <!-- Detailed Breakdown -->
-      <div class="card" style="margin-top:16px;" id="breakdown-table-card">
+      <div class="card card--section" id="breakdown-table-card">
         <div class="card-section-header" onclick="handleHeaderClick(event,'breakdown-collapse-wrap','breakdown-toggle-btn','Show detailed breakdown','Hide detailed breakdown')">
           <div class="card-title">🔢 Detailed Breakdown</div>
           <div class="header-controls"></div>
           <span class="sec-info info-tip info-tip--rich">&#9432;<span class="tip-popup"><span class="tip-sec-body">Every key metric for all three strategies in one table &mdash; interest paid, net worth, IRR, loan duration.</span><span class="tip-sec-row"><span class="tip-lbl">Answers:</span> Exactly how do the numbers compare?</span><span class="tip-sec-row"><span class="tip-lbl">Good for:</span> Precision comparisons and sharing with a financial advisor.</span></span></span>
           <button class="amort-toggle" id="breakdown-toggle-btn" onclick="toggleSection('breakdown-collapse-wrap','breakdown-toggle-btn','Show detailed breakdown','Hide detailed breakdown')">
-            <span style="display:none">Show detailed breakdown</span>
+            <span class="toggle-label-hidden">Show detailed breakdown</span>
             <span class="chevron">▼</span>
           </button>
         </div>
-        <div class="amort-wrap" id="breakdown-collapse-wrap" style="overflow:visible;">
+        <div class="amort-wrap" id="breakdown-collapse-wrap">
           <table class="breakdown-table" id="breakdown-table">
             <thead>
               <tr>
@@ -3217,7 +3607,7 @@
       </div>
 
       <!-- Cashflow Streams -->
-      <div class="card" style="margin-top:16px;" id="sec-streams">
+      <div class="card card--section" id="sec-streams">
         <div class="card-section-header" onclick="handleHeaderClick(event,'streams-collapse-wrap','streams-toggle-btn','Show cashflow streams','Hide cashflow streams')">
           <div class="card-title">💹 Cashflow Streams</div>
           <div class="header-controls amort-strategy-tabs" id="streams-strat-tabs">
@@ -3227,7 +3617,7 @@
           </div>
           <span class="sec-info info-tip info-tip--rich">&#9432;<span class="tip-popup"><span class="tip-sec-body">Month-by-month view of EMI, prepayment, and investment contributions for one strategy at a time.</span><span class="tip-sec-row"><span class="tip-lbl">Answers:</span> Where does every rupee go each month?</span><span class="tip-sec-row"><span class="tip-lbl">Good for:</span> Budgeting and verifying your inputs are wired correctly.</span></span></span>
           <button class="amort-toggle" id="streams-toggle-btn" onclick="toggleSection('streams-collapse-wrap','streams-toggle-btn','Show cashflow streams','Hide cashflow streams')">
-            <span style="display:none">Show cashflow streams</span>
+            <span class="toggle-label-hidden">Show cashflow streams</span>
             <span class="chevron">▼</span>
           </button>
         </div>
@@ -3237,13 +3627,13 @@
       </div>
 
       <!-- Year-end Portfolio Snapshots -->
-      <div class="card" style="margin-top:16px;" id="sec-yearend">
+      <div class="card card--section" id="sec-yearend">
         <div class="card-section-header" onclick="handleHeaderClick(event,'yearend-collapse-wrap','yearend-toggle-btn','Show year-end snapshots','Hide year-end snapshots')">
           <div class="card-title">📅 Year-end Portfolio Snapshots</div>
           <div class="header-controls"></div>
           <span class="sec-info info-tip info-tip--rich">&#9432;<span class="tip-popup"><span class="tip-sec-body">Annual milestones &mdash; outstanding loan balance, investment value, and net worth at each year end.</span><span class="tip-sec-row"><span class="tip-lbl">Answers:</span> Where will I stand in year 5, 10, or 20?</span><span class="tip-sec-row"><span class="tip-lbl">Good for:</span> Milestone planning and mid-course portfolio checks.</span></span></span>
           <button class="amort-toggle" id="yearend-toggle-btn" onclick="toggleSection('yearend-collapse-wrap','yearend-toggle-btn','Show year-end snapshots','Hide year-end snapshots')">
-            <span style="display:none">Show year-end snapshots</span>
+            <span class="toggle-label-hidden">Show year-end snapshots</span>
             <span class="chevron">▼</span>
           </button>
         </div>
@@ -3253,7 +3643,7 @@
       </div>
 
       <!-- Per-stream FV Waterfall -->
-      <div class="card" style="margin-top:16px;" id="sec-waterfall">
+      <div class="card card--section" id="sec-waterfall">
         <div class="card-section-header" onclick="handleHeaderClick(event,'waterfall-collapse-wrap','waterfall-toggle-btn','Show FV waterfall','Hide FV waterfall')">
           <div class="card-title">🔬 Per-stream FV Waterfall</div>
           <div class="header-controls amort-strategy-tabs" id="waterfall-strat-tabs">
@@ -3263,7 +3653,7 @@
           </div>
           <span class="sec-info info-tip info-tip--rich">&#9432;<span class="tip-popup"><span class="tip-sec-body">Breaks final net worth into its building blocks &mdash; interest saved, portfolio gains, equity unlocked.</span><span class="tip-sec-row"><span class="tip-lbl">Answers:</span> What actually drove my result?</span><span class="tip-sec-row"><span class="tip-lbl">Good for:</span> Understanding the &lsquo;why&rsquo; behind the winning strategy.</span></span></span>
           <button class="amort-toggle" id="waterfall-toggle-btn" onclick="toggleSection('waterfall-collapse-wrap','waterfall-toggle-btn','Show FV waterfall','Hide FV waterfall')">
-            <span style="display:none">Show FV waterfall</span>
+            <span class="toggle-label-hidden">Show FV waterfall</span>
             <span class="chevron">▼</span>
           </button>
         </div>
@@ -3273,7 +3663,7 @@
       </div>
 
       <!-- Amortization Table (Prepay / Hybrid scenario) -->
-      <div class="card amort-section" id="sec-schedule" style="margin-top:16px;">
+      <div class="card amort-section amort-section--mt" id="sec-schedule">
         <div class="card-section-header" onclick="handleAmortHeaderClick(event)">
           <div class="card-title">📅 Amortization Schedule</div>
           <div class="header-controls amort-strategy-tabs" id="amort-strat-tabs">
@@ -3283,7 +3673,7 @@
           </div>
           <span class="sec-info info-tip info-tip--rich">&#9432;<span class="tip-popup"><span class="tip-sec-body">Month-by-month loan repayment table &mdash; EMI, interest, principal, and extra prepayments for each period.</span><span class="tip-sec-row"><span class="tip-lbl">Answers:</span> Exactly what do I owe and when does the balance clear?</span><span class="tip-sec-row"><span class="tip-lbl">Good for:</span> Cash flow planning and bank verification.</span></span></span>
           <button class="amort-toggle" id="amort-toggle-btn" onclick="toggleAmort()">
-            <span style="display:none">Show amortization table</span>
+            <span class="toggle-label-hidden">Show amortization table</span>
             <span class="chevron">▼</span>
           </button>
         </div>
@@ -3337,7 +3727,7 @@
   </div><!-- /calc-grid -->
 
   <!-- ══ CAGR Sensitivity Matrix — full width, outside calc-grid ══ -->
-  <div class="card" style="margin-top:16px;" id="sec-sensitivity">
+  <div class="card sensitivity-card" id="sec-sensitivity">
     <div class="card-section-header" onclick="handleHeaderClick(event,'sensitivity-collapse-wrap','sensitivity-toggle-btn','Show sensitivity matrix','Hide sensitivity matrix')">
       <div class="card-title">📊 CAGR Sensitivity Matrix</div>
       <div class="header-controls amort-strategy-tabs" id="sensitivity-dim-tabs">
@@ -3347,7 +3737,7 @@
       </div>
       <span class="sec-info info-tip info-tip--rich">&#9432;<span class="tip-popup"><span class="tip-sec-body">Grid showing which strategy wins across a range of investment returns and loan rates.</span><span class="tip-sec-row"><span class="tip-lbl">Answers:</span> How fragile is my conclusion to the CAGR assumption?</span><span class="tip-sec-row"><span class="tip-lbl">Good for:</span> Stress-testing before committing to a strategy.</span></span></span>
       <button class="amort-toggle" id="sensitivity-toggle-btn" onclick="toggleSection('sensitivity-collapse-wrap','sensitivity-toggle-btn','Show sensitivity matrix','Hide sensitivity matrix')">
-        <span style="display:none">Show sensitivity matrix</span>
+        <span class="toggle-label-hidden">Show sensitivity matrix</span>
         <span class="chevron">▼</span>
       </button>
     </div>
@@ -3412,21 +3802,21 @@
 
     <!-- ── Strategy headers ──────────────────────────────── -->
     <div class="qv2-head prepay-top">
-      <div class="scenario-icon prepay-bg" style="width:34px;height:34px;font-size:1rem;flex-shrink:0;">🏠</div>
+      <div class="scenario-icon prepay-bg scenario-icon--qual">🏠</div>
       <div>
         <div class="qual-htitle">Full Prepay</div>
         <div class="qual-hsub">Guaranteed return · illiquid equity</div>
       </div>
     </div>
     <div class="qv2-head invest-top">
-      <div class="scenario-icon invest-bg" style="width:34px;height:34px;font-size:1rem;flex-shrink:0;">📈</div>
+      <div class="scenario-icon invest-bg scenario-icon--qual">📈</div>
       <div>
         <div class="qual-htitle">Full Invest</div>
         <div class="qual-hsub">Compounding growth · market risk</div>
       </div>
     </div>
     <div class="qv2-head hybrid-top">
-      <div class="scenario-icon hybrid-bg" style="width:34px;height:34px;font-size:1rem;flex-shrink:0;">⚖️</div>
+      <div class="scenario-icon hybrid-bg scenario-icon--qual">⚖️</div>
       <div>
         <div class="qual-htitle">Hybrid Split</div>
         <div class="qual-hsub">Balanced upside · tunable risk</div>
@@ -3523,7 +3913,7 @@
   </div><!-- /qual-grid-v2 -->
 
   <!-- ── Context: Best / Worst when — same grid layout ──── -->
-  <div class="qual-grid-v2 qgv2-context" style="margin-top:0; padding-top:0;">
+  <div class="qual-grid-v2 qgv2-context qgv2-context--flush">
 
     <!-- ── ✅ Best when ─────────────────────────────────── -->
     <div class="qv2-cat first">
@@ -3830,12 +4220,13 @@
       Instagram
     </a>
   </div>
-  <div class="footer-disclaimer">Results are estimates for educational purposes. Past returns &ne; future performance. Consult a financial advisor. &nbsp;&middot;&nbsp; <span style="opacity:0.55;">v2.2</span></div>
+  <div class="footer-disclaimer">Results are estimates for educational purposes. Past returns &ne; future performance. Consult a financial advisor. &nbsp;&middot;&nbsp; <span class="footer-version">v2.2</span></div>
 </footer>
 
 </section><!-- /view-prepay -->
 
 <!-- ── Scripts ──────────────────────────────────────────────── -->
+<script src="loan-eligibility-rules.js"></script>
 <script>
 /* ═══════════════════════════════════════════════════════════
    0. CURRENCY / LOCALE / THEME STATE
@@ -3932,7 +4323,7 @@ const SUITE = {
   emiInitialized: false,
 };
 
-const SUITE_NAV_IDS = { home: null, emi: 'nav-emi', prepay: 'nav-prepay' };
+const SUITE_NAV_IDS = { home: null, emi: 'nav-emi', prepay: 'nav-prepay', eligibility: 'nav-eligibility' };
 
 function showView(name) {
   // Per-view page title + meta description
@@ -3943,6 +4334,8 @@ function showView(name) {
                desc:  'Find your ideal loan amount and tenure. See monthly EMI payments across every rate × tenure combination, colour-coded to your budget.' },
     prepay: { title: 'Strategy Simulator · Mortgage Suite',
                desc:  'Compare prepay, invest and hybrid mortgage strategies across 10 analysis views. Post-tax, inflation-adjusted projections plus a holistic behavioural quiz.' },
+    eligibility: { title: 'Loan Eligibility · Mortgage Suite',
+               desc:  'Check your mortgage eligibility based on country-specific regulations — DTI/DSTI caps, LTV limits, tenure constraints and stress-test buffers.' },
   };
   const vm = VIEW_META[name] || VIEW_META.home;
   document.title = vm.title;
@@ -3980,6 +4373,7 @@ function showView(name) {
   // Re-render active tool so currency/fmt are up to date
   if (name === 'emi') emiBuildAndRender();
   if (name === 'prepay') updateAll();
+  if (name === 'eligibility') eligCalcAndRender();
 }
 
 /* Unified nav handlers — operate on both tools */
@@ -3994,9 +4388,11 @@ function setCurrency(code) {
   if (emiLoanSym) emiLoanSym.textContent = sym;
   if (emiBgtSym)  emiBgtSym.textContent  = sym;
   updateInputPrefixes(); // updates .inp-cur-prefix in Prepay view
+  eligUpdateCurrencyPrefixes(); // updates eligibility currency prefixes
   // Re-render active tool
   if (SUITE.view === 'emi') emiBuildAndRender();
   if (SUITE.view === 'prepay') updateAll();
+  if (SUITE.view === 'eligibility') eligCalcAndRender();
 }
 
 function toggleTheme() {
@@ -4014,6 +4410,8 @@ function resetAll() {
   } else if (SUITE.view === 'prepay') {
     clearSavedState();
     location.reload();
+  } else if (SUITE.view === 'eligibility') {
+    eligResetAll();
   }
 }
 
@@ -4030,6 +4428,302 @@ function simulatePrepayInvest(loan, rate, tenure) {
   if (tenureYEl) { tenureYEl.value = Math.floor(tenure); tenureYEl.dispatchEvent(new Event('input')); }
   if (tenureMMEl){ tenureMMEl.value = 0; tenureMMEl.dispatchEvent(new Event('input')); }
   setTimeout(updateAll, 50);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   LOAN ELIGIBILITY — view logic (data engine in loan-eligibility-rules.js)
+   ═══════════════════════════════════════════════════════════ */
+
+const ELIG_INPUTS = ['elig-income','elig-debts','elig-property','elig-contribution','elig-rate','elig-tenure','elig-age'];
+const ELIG_SLIDERS = {
+  'elig-sl-rate':   'elig-rate',
+  'elig-sl-tenure': 'elig-tenure',
+  'elig-sl-age':    'elig-age',
+};
+const ELIG_LS_KEY = 'mms_elig_v1';
+
+function eligSaveState() {
+  try {
+    const data = { v: 1 };
+    ELIG_INPUTS.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) data[id] = el.value;
+    });
+    const emp = document.getElementById('elig-employment');
+    const fh  = document.getElementById('elig-first-home');
+    if (emp) data['elig-employment'] = emp.value;
+    if (fh)  data['elig-first-home'] = fh.checked;
+    localStorage.setItem(ELIG_LS_KEY, JSON.stringify(data));
+  } catch(e) {}
+}
+
+function eligLoadState() {
+  try {
+    const raw = localStorage.getItem(ELIG_LS_KEY);
+    if (!raw) return false;
+    const data = JSON.parse(raw);
+    if (!data || data.v !== 1) return false;
+    ELIG_INPUTS.forEach(id => {
+      if (data[id] == null) return;
+      const el = document.getElementById(id);
+      if (el) el.value = data[id];
+    });
+    // Sync sliders with restored values
+    Object.entries(ELIG_SLIDERS).forEach(([slId, inpId]) => {
+      const sl  = document.getElementById(slId);
+      const inp = document.getElementById(inpId);
+      if (sl && inp && data[inpId] != null) sl.value = data[inpId];
+    });
+    const emp = document.getElementById('elig-employment');
+    const fh  = document.getElementById('elig-first-home');
+    if (emp && data['elig-employment']) emp.value = data['elig-employment'];
+    if (fh  && data['elig-first-home'] != null) fh.checked = data['elig-first-home'];
+    return true;
+  } catch(e) { return false; }
+}
+
+function eligClearState() {
+  try { localStorage.removeItem(ELIG_LS_KEY); } catch(e) {}
+}
+
+/** Read all eligibility inputs into a params object */
+function eligGetInputs() {
+  const el = id => document.getElementById(id);
+  return {
+    monthlyIncome:      parseFloat(el('elig-income')?.value) || 0,
+    existingEMIs:       parseFloat(el('elig-debts')?.value) || 0,
+    propertyValue:      parseFloat(el('elig-property')?.value) || 0,
+    ownContribution:    parseFloat(el('elig-contribution')?.value) || 0,
+    interestRate:       parseFloat(el('elig-rate')?.value) || 0,
+    desiredTenureYears: parseInt(el('elig-tenure')?.value, 10) || 25,
+    age:                parseInt(el('elig-age')?.value, 10) || 30,
+    currencyCode:       APP_STATE.currency,
+    employmentType:     el('elig-employment')?.value || 'salaried',
+    isFirstHome:        el('elig-first-home')?.checked !== false,
+  };
+}
+
+/** Main compute + render cycle */
+function eligCalcAndRender() {
+  const p = eligGetInputs();
+  const res = computeEligibility(p);
+
+  // Format helpers — reuse the suite-wide fmtCcy / fmtFull already defined below
+  const fmt = typeof fmtCcy === 'function' ? fmtCcy : (n => String(Math.round(n)));
+
+  // Headline numbers
+  const tx = (id, txt) => { const e = document.getElementById(id); if (e) e.textContent = txt; };
+  tx('elig-loan-val',   res.eligible ? fmt(res.eligibleLoan) : '—');
+  tx('elig-emi-val',    res.eligible ? fmt(res.maxEMI) + ' /mo' : '—');
+  tx('elig-tenure-val', res.effectiveTenure ? res.effectiveTenure + ' yr' : '—');
+  tx('elig-down-val',   res.eligible ? fmt(res.minDownPayment) : '—');
+
+  // Breakdown table
+  tx('elig-bd-dsti',       res.eligible ? fmt(res.maxLoanDSTI) : '—');
+  tx('elig-bd-ltv',        res.eligible ? fmt(res.maxLoanLTV) : '—');
+  tx('elig-bd-requested',  res.eligible ? fmt(res.requestedLoan) : '—');
+  tx('elig-bd-binding',    res.bindingConstraint === 'income' ? '🔒 Income / DSTI'
+                          : res.bindingConstraint === 'contribution' ? '🔒 Own Contribution'
+                          : '🔒 Property LTV');
+  tx('elig-bd-dsticap',    res.dstiCapUsed ? (res.dstiCapUsed * 100).toFixed(0) + '%' : '—');
+  tx('elig-bd-ltvcap',     res.effectiveLTV ? (res.effectiveLTV * 100).toFixed(0) + '%' : '—');
+  tx('elig-bd-actualdsti',  res.actualDSTI ? (res.actualDSTI * 100).toFixed(1) + '%' : '—');
+  tx('elig-bd-actualltv',   res.actualLTV ? (res.actualLTV * 100).toFixed(1) + '%' : '—');
+  tx('elig-bd-interest',    res.eligible ? fmt(res.totalInterest) : '—');
+  tx('elig-bd-total',       res.eligible ? fmt(res.totalPayment) : '—');
+
+  // Warnings
+  const warnWrap = document.getElementById('elig-warnings');
+  const warnList = document.getElementById('elig-warnings-list');
+  if (warnWrap && warnList) {
+    if (res.warnings && res.warnings.length) {
+      warnWrap.style.display = '';
+      warnList.innerHTML = res.warnings.map(w => '<div style="margin-bottom:4px;">⚠ ' + w + '</div>').join('');
+    } else {
+      warnWrap.style.display = 'none';
+    }
+  }
+
+  // Regulation notes
+  const notesList = document.getElementById('elig-notes-list');
+  if (notesList && res.rulesUsed && res.rulesUsed.notes) {
+    notesList.innerHTML = res.rulesUsed.notes.map(n => '<div style="margin-bottom:3px;">• ' + n + '</div>').join('');
+  } else if (notesList) {
+    notesList.innerHTML = '<div>No regulation data for this currency.</div>';
+  }
+
+  // Source URLs for cross-validation
+  const srcList = document.getElementById('elig-sources-list');
+  if (srcList && res.rulesUsed && res.rulesUsed.sourceUrls && res.rulesUsed.sourceUrls.length) {
+    const regLine = '<div style="margin-bottom:3px;font-weight:600;color:var(--text);">📜 ' + res.rulesUsed.regulation + '</div>';
+    const links = res.rulesUsed.sourceUrls.map(s =>
+      '<div style="margin-bottom:2px;">↗ <a href="' + s.url + '" target="_blank" rel="noopener noreferrer" style="color:var(--color-info);text-decoration:underline;text-underline-offset:2px;">' + s.label + '</a></div>'
+    ).join('');
+    const updated = '<div style="margin-top:6px;opacity:0.65;">Last sourced: ' + res.rulesUsed.lastUpdated + '</div>';
+    srcList.innerHTML = regLine + links + updated;
+  } else if (srcList) {
+    srcList.innerHTML = '<div>No source links available for this currency.</div>';
+  }
+
+  // Country / regulator pills
+  if (res.rulesUsed) {
+    tx('elig-country-pill',   '🌍 ' + res.rulesUsed.country);
+    tx('elig-regulator-pill', '🏛 ' + res.rulesUsed.regulator);
+    tx('elig-updated-pill',   '📅 Rules as of ' + res.rulesUsed.lastUpdated);
+  } else {
+    tx('elig-country-pill',   '🌍 No data');
+    tx('elig-regulator-pill', '🏛 —');
+    tx('elig-updated-pill',   '📅 —');
+  }
+
+  // Dynamic income label & hint based on country's incomeType
+  eligUpdateIncomeHint(res.rulesUsed);
+
+  // Live values next to labels
+  tx('elig-lv-income',       fmt(p.monthlyIncome));
+  tx('elig-lv-debts',        fmt(p.existingEMIs));
+  tx('elig-lv-property',     fmt(p.propertyValue));
+  tx('elig-lv-contribution', fmt(p.ownContribution));
+  tx('elig-lv-rate',         p.interestRate.toFixed(1) + '%');
+  tx('elig-lv-tenure',       p.desiredTenureYears + ' yr');
+  tx('elig-lv-age',          p.age + ' yr');
+
+  // Contribution hint — show LTV % and whether it meets minimum
+  const contHint = document.getElementById('elig-contribution-hint');
+  if (contHint && p.propertyValue > 0) {
+    const pct = ((p.ownContribution / p.propertyValue) * 100).toFixed(1);
+    const minDP = res.minDownPayment || 0;
+    const sufficient = p.ownContribution >= minDP;
+    contHint.innerHTML = 'Down payment: ' + pct + '% of property'
+      + (res.effectiveLTV ? ' · Min required: ' + fmt(minDP) + (sufficient ? ' ✓' : ' ✗') : '');
+  } else if (contHint) {
+    contHint.innerHTML = '';
+  }
+
+  // Store last result for cross-linking
+  window._eligLastResult = res;
+  window._eligLastInputs = p;
+
+  // Persist inputs
+  eligSaveState();
+}
+
+/** Update currency prefixes in eligibility inputs */
+function eligUpdateCurrencyPrefixes() {
+  const sym = CUR[APP_STATE.currency]?.sym || APP_STATE.currency;
+  document.querySelectorAll('.elig-cur-prefix').forEach(el => el.textContent = sym);
+  // Also refresh income hint for new currency
+  const r = (typeof getCountryForCurrency === 'function') ? ELIG_RULES[APP_STATE.currency] : null;
+  eligUpdateIncomeHint(r);
+}
+
+/** Update income input label and hint based on country's incomeType */
+function eligUpdateIncomeHint(rules) {
+  const label = document.getElementById('elig-income-label');
+  const hint  = document.getElementById('elig-income-hint');
+  if (!label || !hint) return;
+  const isNet = rules && rules.incomeType === 'net';
+  const country = rules ? rules.country : '';
+  if (isNet) {
+    label.textContent = 'Net Monthly Income';
+    hint.innerHTML = 'ℹ️ <strong>' + country + '</strong> regulations require DSTI to be calculated on <strong>net take-home</strong> income (after tax &amp; social contributions). Enter your net salary.';
+    hint.style.color = 'var(--color-warn, #e8a735)';
+  } else {
+    label.textContent = 'Gross Monthly Income';
+    hint.innerHTML = country ? 'ℹ️ <strong>' + country + '</strong> regulations calculate DSTI on <strong>gross</strong> income (before tax). Enter your gross salary.' : '';
+    hint.style.color = 'var(--text-muted)';
+  }
+}
+
+/** Reset eligibility inputs to defaults */
+function eligResetAll() {
+  const el = id => document.getElementById(id);
+  const set = (id, v) => { const e = el(id); if (e) e.value = v; };
+  set('elig-income', 10000);
+  set('elig-debts', 0);
+  set('elig-property', 500000);
+  set('elig-contribution', 100000);
+  set('elig-rate', 7.5); set('elig-sl-rate', 7.5);
+  set('elig-tenure', 25); set('elig-sl-tenure', 25);
+  set('elig-age', 30); set('elig-sl-age', 30);
+  if (el('elig-employment')) el('elig-employment').value = 'salaried';
+  if (el('elig-first-home')) el('elig-first-home').checked = true;
+  eligClearState();
+  eligCalcAndRender();
+}
+
+/** Cross-link: Eligibility → EMI Matrix
+ *  Pre-fills: loan amount, monthly budget (= max EMI from income/DSTI),
+ *  so the matrix immediately shows which rate×tenure combos fit.
+ */
+function openEmiFromEligibility() {
+  const res = window._eligLastResult;
+  const inp = window._eligLastInputs;
+  if (!res || !res.eligible) { showView('emi'); return; }
+  showView('emi');
+
+  // Seed EMI Matrix inputs
+  const emiLoan   = document.getElementById('emi-inp-loan');
+  const emiBudget = document.getElementById('inp-budget');
+  if (emiLoan)   { emiLoan.value   = Math.round(res.eligibleLoan); emiLoan.dispatchEvent(new Event('input')); }
+  if (emiBudget) { emiBudget.value = Math.round(res.maxEMI);       emiBudget.dispatchEvent(new Event('input')); }
+
+  // Brief info toast so user understands the pre-fill
+  const fmt = typeof fmtCcy === 'function' ? fmtCcy : (n => String(Math.round(n)));
+  const msg = 'Pre-filled from Eligibility: Loan ' + fmt(res.eligibleLoan) + ', Budget ' + fmt(res.maxEMI) + '/mo (max affordable EMI based on your income).';
+  eligShowToast(msg);
+
+  setTimeout(() => { if (typeof emiBuildAndRender === 'function') emiBuildAndRender(); }, 50);
+}
+
+/** Lightweight toast for cross-link feedback */
+function eligShowToast(msg) {
+  let t = document.getElementById('elig-toast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'elig-toast';
+    t.className = 'elig-toast';
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.style.opacity = '1';
+  setTimeout(() => { t.style.opacity = '0'; }, 5000);
+}
+
+/** Cross-link: Eligibility → Prepay/Invest */
+function openPrepayFromEligibility() {
+  const res = window._eligLastResult;
+  const inp = window._eligLastInputs;
+  if (!res || !res.eligible) { showView('prepay'); return; }
+  simulatePrepayInvest(res.eligibleLoan, inp.interestRate, res.effectiveTenure);
+}
+
+/** Wire up eligibility input listeners (called once on DOMContentLoaded) */
+function eligInitListeners() {
+  const el = id => document.getElementById(id);
+  // Number inputs
+  ELIG_INPUTS.forEach(id => {
+    const e = el(id);
+    if (e) e.addEventListener('input', eligCalcAndRender);
+  });
+  // Sliders ↔ number inputs
+  Object.entries(ELIG_SLIDERS).forEach(([sliderId, inputId]) => {
+    const slider = el(sliderId);
+    const input  = el(inputId);
+    if (slider && input) {
+      slider.addEventListener('input', () => { input.value = slider.value; eligCalcAndRender(); });
+      input.addEventListener('input', () => { slider.value = input.value; });
+    }
+  });
+  // Select & checkbox
+  const emp = el('elig-employment');
+  const fh  = el('elig-first-home');
+  if (emp) emp.addEventListener('change', eligCalcAndRender);
+  if (fh)  fh.addEventListener('change', eligCalcAndRender);
+  // Restore persisted state
+  eligLoadState();
+  // Initial currency prefix
+  eligUpdateCurrencyPrefixes();
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -6352,6 +7046,7 @@ function setNumFormat(f) {
   const btn = document.getElementById('numfmt-btn');
   if (btn) { btn.textContent = f === 'compact' ? '1.2M' : '123'; btn.title = f === 'compact' ? 'Switch to full numbers' : 'Switch to compact numbers'; }
   if (SUITE.view === 'emi') emiBuildAndRender();
+  else if (SUITE.view === 'eligibility') eligCalcAndRender();
   else { updateAll(); if (typeof rebuildSensMatrix === 'function') rebuildSensMatrix(); }
 }
 
@@ -6369,6 +7064,7 @@ function setTheme(t, manual = true) {
   document.querySelectorAll('input[type="range"]:not(.no-fill)').forEach(syncSliderFill);
   if (SUITE.view === 'prepay') updateAll();
   else if (SUITE.view === 'emi') emiBuildAndRender();
+  else if (SUITE.view === 'eligibility') eligCalcAndRender();
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -6577,6 +7273,7 @@ Chart.defaults.color = tickColor;
   }
 })();
 
+eligInitListeners();
 updateChartDict();
 updateAll();
 
@@ -6678,15 +7375,15 @@ function collapseAllSections() {
   bar.className = 'qv2-sticky-bar';
   bar.innerHTML = `
     <div class="qv2-sticky-pill prepay">
-      <div class="scenario-icon prepay-bg" style="width:34px;height:34px;font-size:1rem;flex-shrink:0;">🏠</div>
+      <div class="scenario-icon prepay-bg scenario-icon--qual">🏠</div>
       <div><div class="qual-htitle">Full Prepay</div><div class="qual-hsub">Guaranteed return &middot; illiquid equity</div></div>
     </div>
     <div class="qv2-sticky-pill invest">
-      <div class="scenario-icon invest-bg" style="width:34px;height:34px;font-size:1rem;flex-shrink:0;">📈</div>
+      <div class="scenario-icon invest-bg scenario-icon--qual">📈</div>
       <div><div class="qual-htitle">Full Invest</div><div class="qual-hsub">Compounding growth &middot; market risk</div></div>
     </div>
     <div class="qv2-sticky-pill hybrid">
-      <div class="scenario-icon hybrid-bg" style="width:34px;height:34px;font-size:1rem;flex-shrink:0;">⚖️</div>
+      <div class="scenario-icon hybrid-bg scenario-icon--qual">⚖️</div>
       <div><div class="qual-htitle">Hybrid Split</div><div class="qual-hsub">Balanced upside &middot; tunable risk</div></div>
     </div>
   `;
